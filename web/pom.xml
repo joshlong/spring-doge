@@ -17,7 +17,7 @@
 	</parent>
 
 	<dependencies>
-        <dependency>
+       <!-- <dependency>
             <groupId>org.springframework.social</groupId>
             <artifactId>spring-social-security</artifactId>
             <version>${org.springframework.social-version}</version>
@@ -31,34 +31,43 @@
             <groupId>org.springframework.social</groupId>
             <artifactId>spring-social-facebook-web</artifactId>
             <version>${org.springframework.social-version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+        <!--<dependency>
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>9.1-901-1.jdbc4</version>
         </dependency>
-		<dependency>
+		-->
+        <!--<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-amqp</artifactId>
 		</dependency>
-		<dependency>
+		--><!--<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
 	<!--	<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mobile</artifactId>
 		</dependency>-->
-		<dependency>
+	<!--	<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
-		</dependency>
+		</dependency>-->
 
-		<dependency>
+	<!--	<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-rest</artifactId>
 		</dependency>
@@ -73,13 +82,13 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
 		</dependency>
-        <dependency>
+  <!--      <dependency>
             <groupId>org.springframework.security.oauth</groupId>
             <artifactId>spring-security-oauth2</artifactId>
             <version>2.0.0.BUILD-SNAPSHOT</version>
@@ -89,7 +98,7 @@
                     <groupId>org.codehaus.jackson</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency>-->
 	</dependencies>
 
 	<properties>
@@ -110,7 +119,7 @@
 		</plugins>
 
 	</build>
-    <repositories>
+    <!--<repositories>
         <repository>
             <id>org.springframework.maven.release</id>
             <name>Spring Maven Release Repository</name>
@@ -118,7 +127,7 @@
             <releases><enabled>true</enabled></releases>
             <snapshots><enabled>false</enabled></snapshots>
         </repository>
-        <!-- For testing against latest Spring snapshots -->
+        &lt;!&ndash; For testing against latest Spring snapshots &ndash;&gt;
         <repository>
             <id>org.springframework.maven.snapshot</id>
             <name>Spring Maven Snapshot Repository</name>
@@ -126,12 +135,12 @@
             <releases><enabled>false</enabled></releases>
             <snapshots><enabled>true</enabled></snapshots>
         </repository>
-        <!-- For developing against latest Spring milestones -->
+        &lt;!&ndash; For developing against latest Spring milestones &ndash;&gt;
         <repository>
             <id>org.springframework.maven.milestone</id>
             <name>Spring Maven Milestone Repository</name>
             <url>http://repo.springsource.org/milestone</url>
             <snapshots><enabled>false</enabled></snapshots>
         </repository>
-    </repositories>
+    </repositories>-->
 </project>

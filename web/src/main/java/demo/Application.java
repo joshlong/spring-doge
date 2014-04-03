@@ -4,6 +4,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,6 +20,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
+import javax.servlet.MultipartConfigElement;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,14 +33,19 @@ import java.util.Collections;
 @ComponentScan
 @EnableAutoConfiguration
 public class Application {
+
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
+    }
+
+    // beans we need for the application
+    @Bean
+    MultipartConfigElement multipartConfigElement() {
+        return new MultipartConfigElement("");
     }
 }
 
 interface UserRepository extends JpaRepository<User, Long> {
-
-
 }
 
 @Entity
@@ -96,6 +103,9 @@ class Photo {
 
 @Entity
 class User {
+    @Id
+    @GeneratedValue
+    private Long id;
 
     private String email;
 
@@ -118,9 +128,8 @@ class PhotoUploadRestController {
         this.photoService = photoService;
     }
 
-    // needs to be open for reads
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<byte[]> read(@PathVariable long user) throws IOException {
+    ResponseEntity<byte[]> read(@PathVariable long user) throws IOException {
         Photo photo = photoService.readPhoto(user);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.parseMediaType(photo.getContentType()));
@@ -131,8 +140,7 @@ class PhotoUploadRestController {
     HttpEntity<Void> write(@PathVariable long user, @RequestParam MultipartFile file) throws Throwable {
         byte bytesForProfilePhoto[] = FileCopyUtils.copyToByteArray(file.getInputStream());
 
-        photoService.writePhoto(user, MediaType.parseMediaType(
-                file.getContentType()), bytesForProfilePhoto);
+        photoService.writePhoto(user, MediaType.parseMediaType(file.getContentType()), bytesForProfilePhoto);
 
         HttpHeaders httpHeaders = new HttpHeaders();
         URI uriOfPhoto = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -148,6 +156,7 @@ class PhotoUploadRestController {
 }
 
 interface PhotoRepository extends JpaRepository<Photo, Long> {
+    Photo findByUserId(long userId);
 }
 
 @Service
@@ -163,9 +172,9 @@ class PhotoService implements InitializingBean {
     }
 
     public void writePhoto(long userId, MediaType mediaType, byte[] photo) throws IOException {
+        Photo savedPhoto = this.photoRepository.save(new Photo(userId, mediaType.toString()));
         try (OutputStream outputStream = new FileOutputStream(photo(userId))) {
             FileCopyUtils.copy(photo, outputStream);
-            this.photoRepository.save(new Photo(userId, mediaType.toString()));
         }
     }
 
@@ -175,9 +184,9 @@ class PhotoService implements InitializingBean {
 
     public Photo readPhoto(long userId) throws IOException {
         File fileForPhoto = this.photo(userId);
-        Photo photo = this.photoRepository.findOne(userId);
-        byte[] photoBytes = FileCopyUtils.copyToByteArray(this.photo(userId));
-        return new Photo( userId, photo.getContentType(), photoBytes);
+        Photo photo = this.photoRepository.findByUserId(userId);
+        byte[] photoBytes = FileCopyUtils.copyToByteArray(fileForPhoto);
+        return new Photo(userId, photo.getContentType(), photoBytes);
     }
 
 
@@ -185,7 +194,7 @@ class PhotoService implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         File dirForPhotos = new File(this.dir);
         Assert.isTrue(dirForPhotos.exists() || dirForPhotos.mkdirs(),
-                "you must create a working directory for the files to be uploaded.");
+                String.format("you must create a working directory ('%s') for files to be uploaded.", dirForPhotos.getAbsolutePath()));
 
     }
 }
