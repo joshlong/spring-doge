@@ -1,13 +1,24 @@
 package demo;
 
-import org.springframework.beans.factory.InitializingBean;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
+import com.mongodb.gridfs.GridFSDBFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsCriteria;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -16,18 +27,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Transient;
 import javax.servlet.MultipartConfigElement;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
+import java.math.BigInteger;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 @Configuration
 @ComponentScan
@@ -38,82 +47,26 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    // beans we need for the application
     @Bean
-    MultipartConfigElement multipartConfigElement() {
+    MongoDbFactory mongoDbFactory(Mongo mongo) throws Exception {
+        return new SimpleMongoDbFactory(mongo, "fs");
+    }
+
+    @Bean
+    GridFsTemplate gridFsTemplate(MongoDbFactory mongoDbFactory,
+                                  MongoTemplate mongoTemplate) {
+        return new GridFsTemplate(mongoDbFactory, mongoTemplate.getConverter());
+    }
+
+    @Bean
+    MultipartConfigElement multipartConfigElement() { // needed for file uploads
         return new MultipartConfigElement("");
     }
 }
 
-interface UserRepository extends JpaRepository<User, Long> {
+interface UserRepository extends MongoRepository<User, Long> {
 }
 
-@Entity
-class Photo {
-
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    @Transient
-    private byte[] photo;
-
-    private long userId;
-    private String contentType;
-
-    public Photo(long userId, String contentType) {
-        this.contentType = contentType;
-        this.userId = userId;
-    }
-
-    public Photo(long userId, String contentType, byte[] photo) {
-        this.userId = userId;
-        this.contentType = contentType;
-        this.photo = photo;
-    }
-
-    Photo() {
-    }
-
-    @Override
-    public String toString() {
-        return "Photo{" +
-                "userId=" + userId +
-                ", photo=" + Arrays.toString(photo) +
-                '}';
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public long getUserId() {
-        return userId;
-    }
-
-    public byte[] getPhoto() {
-        return photo;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-}
-
-
-@Entity
-class User {
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    private String email;
-
-    private String password;
-
-    private boolean enabled = false;
-
-}
 
 @RestController
 @RequestMapping(value = PhotoUploadRestController.PHOTO_URI)
@@ -155,99 +108,144 @@ class PhotoUploadRestController {
 
 }
 
-interface PhotoRepository extends JpaRepository<Photo, Long> {
+interface PhotoRepository extends MongoRepository<Photo, Long> {
     Photo findByUserId(long userId);
 }
 
 @Service
-class PhotoService implements InitializingBean {
+class PhotoService {
 
-    // todo externalize this?
-    private final String dir = "/Users/jlong/Desktop/images/";
+    private final GridFsTemplate fileSytem;
     private final PhotoRepository photoRepository;
 
     @Autowired
-    public PhotoService(PhotoRepository photoRepository) {
+    public PhotoService(GridFsTemplate fileSytem, PhotoRepository photoRepository) {
         this.photoRepository = photoRepository;
+        this.fileSytem = fileSytem;
     }
 
-    public void writePhoto(long userId, MediaType mediaType, byte[] photo) throws IOException {
-        Photo savedPhoto = this.photoRepository.save(new Photo(userId, mediaType.toString()));
-        try (OutputStream outputStream = new FileOutputStream(photo(userId))) {
-            FileCopyUtils.copy(photo, outputStream);
+    public void writePhoto(long userId, MediaType mediaType, byte[] photo)
+            throws IOException {
+
+        List<GridFSDBFile> gridFSDBFiles = gridFSDBFiles(userId);
+        for (GridFSDBFile gridFSDBFile : gridFSDBFiles) {
+            fileSytem.delete(
+                    new Query().addCriteria(GridFsCriteria.whereMetaData().is(gridFSDBFile.getMetaData())));
         }
-    }
-
-    private File photo(long userId) {
-        return new File(new File(dir), Long.toString(userId));
+        DBObject dbObject = new BasicDBObject();
+        dbObject.put("userId", userId);
+        dbObject.put("when", new Date().getTime());
+        dbObject.put("contentType", mediaType.toString());
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(photo)) {
+            fileSytem.store(byteArrayInputStream, Long.toString(userId), dbObject);
+            photoRepository.save(new Photo(userId, mediaType.toString()));
+        }
     }
 
     public Photo readPhoto(long userId) throws IOException {
-        File fileForPhoto = this.photo(userId);
-        Photo photo = this.photoRepository.findByUserId(userId);
-        byte[] photoBytes = FileCopyUtils.copyToByteArray(fileForPhoto);
-        return new Photo(userId, photo.getContentType(), photoBytes);
+        List<GridFSDBFile> gridFSDBFileList = gridFSDBFiles(userId);
+        Assert.isTrue(gridFSDBFileList.size() <= 1, "there should be 0-1 records returned");
+        GridFSDBFile gridFSDBFile = gridFSDBFileList.iterator().next();
+
+        try (InputStream inputStream = gridFSDBFile.getInputStream()) {
+            DBObject metaData= gridFSDBFile.getMetaData();
+            String mediaType = (String) metaData.get("contentType");
+            byte[] bytes = FileCopyUtils.copyToByteArray(inputStream);
+            return new Photo(userId, mediaType, bytes);
+        }
     }
 
+    private List<GridFSDBFile> gridFSDBFiles(long userId) {
+        Criteria query = GridFsCriteria.whereFilename().is(Long.toString(userId));
+        return fileSytem.find(new Query().addCriteria(query));
+    }
+}
+
+
+class Photo {
+
+    @Id
+    private BigInteger id;
+
+    //    @Transient
+    private byte[] photo;
+
+    private long userId;
+    private String contentType;
+
+    public Photo(long userId, String contentType) {
+        this.contentType = contentType;
+        this.userId = userId;
+    }
+
+    public Photo(long userId, String contentType, byte[] photo) {
+        this.userId = userId;
+        this.contentType = contentType;
+        this.photo = photo;
+    }
+
+    Photo() {
+    }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        File dirForPhotos = new File(this.dir);
-        Assert.isTrue(dirForPhotos.exists() || dirForPhotos.mkdirs(),
-                String.format("you must create a working directory ('%s') for files to be uploaded.", dirForPhotos.getAbsolutePath()));
+    public String toString() {
+        return "Photo{" +
+                "userId=" + userId +
+                ", photo=" + Arrays.toString(photo) +
+                '}';
+    }
 
+    public BigInteger getId() {
+        return id;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public byte[] getPhoto() {
+        return photo;
+    }
+
+    public String getContentType() {
+        return contentType;
     }
 }
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-class UserProfilePhotoReadException extends RuntimeException {
-    public UserProfilePhotoReadException(String message, Throwable cause) {
-        super(message, cause);
+//@Entity
+class User {
+    /*    @Id
+        @GeneratedValue*/
+    private Long id;
+
+    private String email;
+
+    private String password;
+
+    private boolean enabled = false;
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    User() {
+    }
+
+    public User(String email, String password, boolean enabled) {
+        this.email = email;
+        this.password = password;
+        this.enabled = enabled;
     }
 }
-
-/*
-@RestController
-@RequestMapping(value = "/users/{user}/photo")
-class UserProfilePhotoController {
-
-    CrmService crmService;
-    UserResourceAssembler userResourceAssembler;
-
-    @Autowired
-    UserProfilePhotoController(CrmService crmService,
-                               UserResourceAssembler userResourceAssembler) {
-        this.crmService = crmService;
-        this.userResourceAssembler = userResourceAssembler;
-    }
-
-    @RequestMapping(method = POST)
-    HttpEntity<Void> writeUserProfilePhoto(@PathVariable Long user, @RequestParam MultipartFile file) throws Throwable {
-        byte bytesForProfilePhoto[] = FileCopyUtils.copyToByteArray(file.getInputStream());
-        this.crmService.writeUserProfilePhoto(user, MediaType.parseMediaType(file.getContentType()), bytesForProfilePhoto);
-
-
-        Resource<User> userResource = this.userResourceAssembler.toResource(crmService.findById(user));
-        List<Link> linkCollection = userResource.getLinks();
-        Links wrapperOfLinks = new Links(linkCollection);
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Link", wrapperOfLinks.toString());  // we can't encode the links in the body of the response, so we put them in the "Links:" header.
-        httpHeaders.setLocation(URI.create(userResource.getLink("photo").getHref())); // "Location: /users/{userId}/photo"
-
-        return new ResponseEntity<Void>(httpHeaders, HttpStatus.ACCEPTED);
-    }
-
-    @RequestMapping(method = GET)
-    HttpEntity<byte[]> loadUserProfilePhoto(@PathVariable Long user) throws Exception {
-        ProfilePhoto profilePhoto = this.crmService.readUserProfilePhoto(user);
-        if (profilePhoto != null) {
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setContentType(profilePhoto.getMediaType());
-            return new ResponseEntity<byte[]>(profilePhoto.getPhoto(), httpHeaders, HttpStatus.OK);
-        }
-        throw new UserProfilePhotoReadException(user);
-
-    }
-
-}*/
