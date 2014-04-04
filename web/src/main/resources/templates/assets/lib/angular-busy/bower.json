@@ -1,0 +1,31 @@
+{
+  "name": "angular-busy",
+  "version": "3.0.2",
+  "main": [
+    "dist/angular-busy.js",
+    "dist/angular-busy.css"
+  ],
+  "dependencies": {
+    "angular": "~1.2",
+    "angular-promise-tracker": "~1.5",
+    "angular-animate": "~1.2"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components",
+    "test",
+    "temp",
+    "demo",
+    "lib",
+    "./angular-busy.css",
+    "./angular-busy.html",
+    "./angular-busy.js",
+    "Gruntfile.js",
+    "package.json",
+    "README.md"
+  ],
+  "devDependencies": {
+    "jquery": "~2.0.2"
+  }
+}

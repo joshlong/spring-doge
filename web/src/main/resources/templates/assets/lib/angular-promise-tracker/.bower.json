@@ -1,0 +1,43 @@
+{
+  "author": "Andy Joslin",
+  "name": "promise-tracker",
+  "description": "Easily add spinners or general request tracking to your angular app.",
+  "version": "1.5.1",
+  "homepage": "http://github.com/ajoslin/angular-promise-tracker",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ajoslin/angular-promise-tracker"
+  },
+  "license": "Public Domain",
+  "main": "./promise-tracker.js",
+  "ignore": [
+    "CHANGELOG.md",
+    "Gruntfile.js",
+    "bower.json",
+    "bower_components",
+    "dist",
+    "node_modules",
+    "package.json",
+    "src",
+    "test"
+  ],
+  "files": [
+    "promise-tracker.js",
+    "promise-tracker.min.js",
+    "README.md"
+  ],
+  "devDependencies": {
+    "angular": "1.2.6",
+    "angular-mocks": "1.2.6",
+    "angular-resource": "1.2.6"
+  },
+  "_release": "1.5.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.5.1",
+    "commit": "0a5a30e876312d367d84008eff9fc0026c09374c"
+  },
+  "_source": "git://github.com/ajoslin/angular-promise-tracker.git",
+  "_target": "~1.5",
+  "_originalSource": "angular-promise-tracker"
+}

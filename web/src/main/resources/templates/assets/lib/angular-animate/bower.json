@@ -1,0 +1,8 @@
+{
+  "name": "angular-animate",
+  "version": "1.2.17-build.85+sha.d2dc771",
+  "main": "./angular-animate.js",
+  "dependencies": {
+    "angular": "1.2.17-build.85+sha.d2dc771"
+  }
+}
