@@ -20,6 +20,7 @@ import org.springframework.data.mongodb.gridfs.GridFsCriteria;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.http.*;
+import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
@@ -38,6 +39,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author Josh Long (josh@joshlong.com)
+ */
 @Configuration
 @ComponentScan
 @EnableAutoConfiguration
@@ -47,6 +51,7 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
+    // NB: this should be taken care of for u in a imminent Spring Boot release.
     @Bean
     MongoDbFactory mongoDbFactory(Mongo mongo) throws Exception {
         return new SimpleMongoDbFactory(mongo, "fs");
@@ -57,6 +62,7 @@ public class Application {
                                   MongoTemplate mongoTemplate) {
         return new GridFsTemplate(mongoDbFactory, mongoTemplate.getConverter());
     }
+    //
 
     @Bean
     MultipartConfigElement multipartConfigElement() { // needed for file uploads
@@ -64,7 +70,23 @@ public class Application {
     }
 }
 
-interface UserRepository extends MongoRepository<User, Long> {
+
+@Controller
+class PhotoUploadMvcController {
+
+    private final PhotoService photoService;
+
+    @Autowired
+    public PhotoUploadMvcController(PhotoService photoService) {
+        this.photoService = photoService;
+    }
+
+    @RequestMapping ("client")
+    String client(){
+        return "client" ;
+    }
+
+
 }
 
 
@@ -73,7 +95,6 @@ interface UserRepository extends MongoRepository<User, Long> {
 class PhotoUploadRestController {
 
     public static final String PHOTO_URI = "/users/{user}/photo";
-
     private final PhotoService photoService;
 
     @Autowired
@@ -104,7 +125,6 @@ class PhotoUploadRestController {
 
         return new ResponseEntity<Void>(httpHeaders, HttpStatus.CREATED);
     }
-
 
 }
 
@@ -148,7 +168,7 @@ class PhotoService {
         GridFSDBFile gridFSDBFile = gridFSDBFileList.iterator().next();
 
         try (InputStream inputStream = gridFSDBFile.getInputStream()) {
-            DBObject metaData= gridFSDBFile.getMetaData();
+            DBObject metaData = gridFSDBFile.getMetaData();
             String mediaType = (String) metaData.get("contentType");
             byte[] bytes = FileCopyUtils.copyToByteArray(inputStream);
             return new Photo(userId, mediaType, bytes);
@@ -209,43 +229,5 @@ class Photo {
 
     public String getContentType() {
         return contentType;
-    }
-}
-
-//@Entity
-class User {
-    /*    @Id
-        @GeneratedValue*/
-    private Long id;
-
-    private String email;
-
-    private String password;
-
-    private boolean enabled = false;
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    User() {
-    }
-
-    public User(String email, String password, boolean enabled) {
-        this.email = email;
-        this.password = password;
-        this.enabled = enabled;
     }
 }

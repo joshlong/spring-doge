@@ -1,0 +1,134 @@
+<!DOCTYPE HTML>
+<html ng-app="doge">
+<head>
+    <title>Google Force
+    </title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+    <meta charset="utf-8"/>
+    <link href="webjars/bootstrap/3.0.2/css/bootstrap.css" rel="stylesheet"/>
+    <style>
+
+
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
+
+
+    <script src="webjars/jquery/2.0.3/jquery.js"></script>
+    <script src="webjars/bootstrap/3.0.2/js/bootstrap.js"></script>
+    <script src="webjars/stomp-websocket/2.3.0/stomp.js"></script>
+    <script src="webjars/sockjs-client/0.3.4/sockjs.js"></script>
+    <script src="webjars/angularjs/1.2.9/angular.js"></script>
+    <script src="webjars/angularjs/1.2.9/angular-resource.js"></script>
+
+
+    <script>
+
+
+        angular.module('doge', [])
+                .controller('DogeController', ['$scope', function ($scope) {
+
+                    $scope.files = [];
+
+                }])
+                .directive('myCustomer', function () {
+                    return {
+                        template: 'Name: {{customer.name}} Address: {{customer.address}}'
+                    };
+                })
+                .directive('filelistBind', function () {
+                    return function (scope, elm, attrs) {
+                        elm.bind('change', function (evt) {
+                            scope.$apply(function () {
+                                scope[ attrs.name ] = evt.target.files;
+                                console.log(scope[ attrs.name ]);
+                            });
+                        });
+                    };
+                });
+
+    </script>
+
+
+</head>
+<body>
+
+<div ng-controller="DogeController" id="console">
+
+    <h1>Upload an Imagess
+    </h1>
+
+    <input type="file" filelist-bind-name="files"/>
+
+    <div>selected files :
+        <pre> {{ files }}</pre>
+    </div>
+
+
+    <!--
+    ng-show="user != null"
+        <div>Welcome <b>{{user.username}}</b>!</div>
+
+        <br/>
+
+        <form name="searchForm" class="navbar-form" role="search">
+            <div class="input-group">
+                <input type="text"
+                       class="form-control"
+                       placeholder="Search"
+                       name="query"
+                       id="query"
+                       ng-model="query"/>
+
+                <div class="input-group-btn">
+                    <button class="btn btn-default" ng-click="process()" type="submit"><span
+                            class="glyphicon glyphicon-search"></span></button>
+                </div>
+            </div>
+        </form>
+        <div class="results-container" ng-show="results.length > 0 ">
+            <div id="status" ng-show="batchData.batchId">
+                 <span class="results-count">
+                     Displaying {{ results.length }} results.
+
+                     <a href="" ng-click="focusOnAllResults()">expand all</a> | <a ng-click="removeFocusFromAllResults()"
+                                                                                   href="">hide all</a>
+                 </span>
+            </div>
+
+            <div class="inline">
+                <div ng-repeat="r in results">
+                    <span ng-show="!r.expanded"><strong> {{ cleanName(r) }} </strong> -</span>
+                    <span style="font-size: smaller">
+
+                        <span ng-show="!r.expanded">
+                            <a ng-click="focusOnResult(r)" href="#">expand</a>
+                        </span>
+                    </span>
+
+                    <div class="expanded-result" ng-show="r.expanded">
+
+                        <span style="font-size: larger"><strong ng-show="r.expanded"> {{ cleanName(r) }} </strong>   </span><br/>
+                        {{address(r)}}
+                        <br/>
+
+                        {{ r.email }}
+
+
+                        <div><span ng-show="r.expanded">
+                            <a ng-click="removeResultFocus(r)" href="#">hide</a>
+                        </span></div>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>-->
+
+</div>
+
+
+<div id="map-canvas"></div>
+
+</body>
+</html>
