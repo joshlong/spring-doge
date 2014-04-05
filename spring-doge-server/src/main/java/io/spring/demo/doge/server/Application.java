@@ -16,23 +16,29 @@
 
 package io.spring.demo.doge.server;
 
+import com.mongodb.Mongo;
 import io.spring.demo.doge.filesystem.mongo.MongoFolder;
-
-import javax.servlet.MultipartConfigElement;
-
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.MultiPartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.ChannelRegistration;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
-import com.mongodb.Mongo;
+import javax.servlet.MultipartConfigElement;
 
 /**
- * Main photos server application.
- * 
+ * Such doge!
+ *
  * @author Josh Long
  * @author Phillip Webb
  */
@@ -41,23 +47,62 @@ import com.mongodb.Mongo;
 @EnableAutoConfiguration
 public class Application {
 
-	/**
-	 * Configure multi-part file uploads.
-	 */
-	@Bean
-	public MultipartConfigElement multipartConfigElement() {
-		MultiPartConfigFactory factory = new MultiPartConfigFactory();
-		factory.setMaxFileSize("10Mb");
-		return factory.createMultipartConfig();
+    /**
+     * Configure multi-part file uploads.
+     */
+    @Bean
+    public MultipartConfigElement multipartConfigElement() {
+        MultiPartConfigFactory factory = new MultiPartConfigFactory();
+        factory.setMaxFileSize("10Mb");
+        return factory.createMultipartConfig();
     }
 
-	@Bean
-	public MongoFolder photoFolder(Mongo mongo) {
-		return new MongoFolder(mongo.getDB("photos"));
-	}
+    @Bean
+    public MongoFolder photoFolder(Mongo mongo) {
+        return new MongoFolder(mongo.getDB("photos"));
+    }
 
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 
+}
+
+
+@EnableScheduling
+@EnableWebSocketMessageBroker
+@Configuration
+class WebSocketConfiguration
+        extends AbstractWebSocketMessageBrokerConfigurer
+        implements SchedulingConfigurer {
+
+    @Bean
+    public ThreadPoolTaskScheduler reservationPool() {
+        return new ThreadPoolTaskScheduler();
+    }
+
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/doge").withSockJS();
+    }
+
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+    }
+
+    @Override
+    public void configureClientOutboundChannel(ChannelRegistration registration) {
+        registration.taskExecutor().corePoolSize(4).maxPoolSize(10);
+    }
+
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        registry.enableSimpleBroker("/queue/", "/topic/");
+        registry.setApplicationDestinationPrefixes("/app");
+    }
+
+    @Override
+    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+        taskRegistrar.setTaskScheduler(reservationPool());
+    }
 }
