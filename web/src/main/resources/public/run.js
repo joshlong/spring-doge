@@ -1,48 +1,71 @@
 require.config({
-
+    baseUrl: 'lib',
     paths: {
-        domReady: 'lib/requirejs-domready/domReady',
-        angular: 'lib/angular/angular',
-        jquery: 'lib/jquery/jquery',
-        bootstrap: 'lib/bootstrap/bootstrap',
-        ngResource: 'lib/angular-resource/angular-resource',
-        ngRoute: 'lib/angular-route/angular-route',
-        sockjs : 'lib/sockjs/sockjs'
+
+        stomp: 'stomp-websocket/lib/stomp',
+        sockjs: 'sockjs/sockjs'
+
+
+        /*  domReady: 'lib/requirejs-domready/domReady',
+         angular: 'lib/angular/angular',
+         jquery: 'lib/jquery/jquery',
+         bootstrap: 'lib/bootstrap/bootstrap',
+         ngResource: 'lib/angular-resource/angular-resource',
+         ngRoute: 'lib/angular-route/angular-route',
+         msgs : 'lib/msgs/msgs',
+         sockjs : 'lib/sockjs/sockjs'*/
+
     },
     shim: {
-        angular: {
-            exports: 'angular'
-        },
-        bootstrap: {
-            deps: ['jquery']
-        },
-        cgBusy: {
-            deps: ['promiseTracker']
-        },
-        'promiseTracker': {
-            deps: ['angular']
-        },
-        'ngResource': {
-            deps: ['angular']
-        }
+        /*  angular: {
+         exports: 'angular'
+         },
+         bootstrap: {
+         deps: ['jquery']
+         },
+         cgBusy: {
+         deps: ['promiseTracker']
+         },
+         'promiseTracker': {
+         deps: ['angular']
+         },
+         'ngResource': {
+         deps: ['angular']
+         }*/
     }
 });
 
 define([
-    'require',
-    'angular',
-    'app'
-], function (require, angular) {
+    'require'
+//    'angular',
+    // 'app'
+], function (require) {
     'use strict';
-    require(['sockjs'],function(sockjs){
-       console.log('loaded sockjs!');
+
+    require(['sockjs', 'stomp'], function (sockjs, stomp) {
+        console.log('loaded sockjs and stomp!');
+        var socket = new SockJS('/doge');
+        console.log('created new SockJS pointing to /doge');
+        var client = Stomp.over(socket);
+        console.log('created new Stomp client on top of SockJS');
+
+        client.connect({}, function (frame) {
+            console.log('Connected ' + frame);
+            client.subscribe("/topic/alarms", function (message) {
+                window.alert(JSON.parse(message.body));
+            });
+        }, function (error) {
+            console.log("STOMP protocol error " + error);
+        });
+
+
     });
-    require(['domReady!'], function (document) {
-        angular.bootstrap(document, ['doge']);
-        console.log('just called angular.bootstrap!')
-    });
-   /* require(['jquery', 'bootstrap'], function () {
-        console.log('Loaded Bootstrap.');
-        return {};
-    });*/
+
+
+    /* require(['domReady!'], function (document) {
+     angular.bootstrap(document, ['doge']);
+     console.log('just called angular.bootstrap!')
+     });*/
+
 });
+

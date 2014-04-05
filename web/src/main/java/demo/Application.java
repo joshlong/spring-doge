@@ -20,6 +20,13 @@ import org.springframework.data.mongodb.gridfs.GridFsCriteria;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.http.*;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.config.ChannelRegistration;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -27,6 +34,9 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
 import javax.servlet.MultipartConfigElement;
 import java.io.ByteArrayInputStream;
@@ -47,6 +57,9 @@ import java.util.List;
 @EnableAutoConfiguration
 public class Application {
 
+    /* public static void main(String args []) {
+         System.out.println( String.format( "%tc", new Date())) ;
+     }*/
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
@@ -76,19 +89,82 @@ class PhotoUploadMvcController {
 
     private final PhotoService photoService;
 
+    private final SimpMessageSendingOperations messagingTemplate;
+
     @Autowired
-    PhotoUploadMvcController(PhotoService photoService) {
+    PhotoUploadMvcController(SimpMessageSendingOperations messagingTemplate,
+                             PhotoService photoService) {
+        this.messagingTemplate = messagingTemplate;
         this.photoService = photoService;
     }
 
-    @RequestMapping ("client")
-    String client(){
-        return "client" ;
+    @RequestMapping("client")
+    void client() {
+    }
+
+
+    @RequestMapping("/go")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    void go() {
+        this.messagingTemplate.convertAndSend(
+                "/topic/alarms", new Greeting(String.format("Hello, %tc", new Date())));
+
+    }
+
+    // todo remove
+    public static class Greeting {
+
+        public Greeting(String msg) {
+            this.message = msg;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        private final String message;
     }
 
 
 }
 
+@EnableScheduling
+@EnableWebSocketMessageBroker
+@Configuration
+class WebSocketConfiguration
+        extends AbstractWebSocketMessageBrokerConfigurer
+        implements SchedulingConfigurer {
+
+    @Bean
+    ThreadPoolTaskScheduler reservationPool() {
+        return new ThreadPoolTaskScheduler();
+    }
+
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/doge").withSockJS();
+    }
+
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+    }
+
+    @Override
+    public void configureClientOutboundChannel(ChannelRegistration registration) {
+        registration.taskExecutor().corePoolSize(4).maxPoolSize(10);
+    }
+
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        registry.enableSimpleBroker("/queue/", "/topic/");
+        registry.setApplicationDestinationPrefixes("/app");
+    }
+
+    @Override
+    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+        taskRegistrar.setTaskScheduler(reservationPool());
+    }
+}
 
 @RestController
 @RequestMapping(value = PhotoUploadRestController.PHOTO_URI)

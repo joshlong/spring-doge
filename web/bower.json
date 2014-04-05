@@ -2,28 +2,9 @@
   "name": "doge",
   "version": "1.0.0-SNAPSHOT",
   "dependencies": {
-    "requirejs": "~2.1.9",
-    "requirejs-domready": "~2.0",
     "sockjs": "~0.3",
-    "bootstrap": "~3.1.1",
-    "jquery": "2.0.3",
-    "html5shiv": "~3.6",
-    "stomp": "stomp-websocket#~2.3.1",
-    "atmosphere": "2.1.2",
-    "jquery-atmosphere": "2.1.2",
-    "bootstrap-sass": "twbs/bootstrap-sass#~3.1.1",
-    "modernizr": "2.7.1",
-    "angular": "1.2.13",
-    "json3": "3.3.0",
-    "angular-route": "1.2.13",
-    "angular-resource": "1.2.13",
-    "angular-cookies": "1.2.13",
-    "angular-sanitize": "1.2.13",
-    "angular-translate": "2.0.0",
-    "angular-translate-storage-cookie": "2.0.0",
-    "angular-translate-loader-static-files": "2.0.0",
-    "angular-dynamic-locale": "0.1.1",
-    "angular-i18n": "1.2.5"
+    "stomp-websocket": "~2.2",
+    "requirejs": "~2.1.11"
   },
   "ignore": [
     "test"
