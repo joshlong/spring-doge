@@ -18,96 +18,96 @@ package io.spring.demo.doge.photo.manipulate;
 
 import io.spring.demo.doge.photo.BufferedImagePhoto;
 import io.spring.demo.doge.photo.Photo;
+import org.springframework.core.io.ClassPathResource;
 
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.imageio.ImageIO;
-
 /**
  * A {@link PhotoManipulator} to add Doge images.
- * 
+ *
  * @author Phillip Webb
  */
 public class DogePhotoManipulator implements PhotoManipulator {
 
-	private static final int IMAGE_WIDTH = 300;
+    private static final int IMAGE_WIDTH = 300;
 
-	private final BufferedImage overlayTop;
+    private final BufferedImage overlayTop;
 
-	private final BufferedImage overlayBottom;
+    private final BufferedImage overlayBottom;
 
-	public DogePhotoManipulator() {
-		this.overlayTop = readClassImage("photos-top.png");
-		this.overlayBottom = readClassImage("photos-bottom.png");
-	}
+    public DogePhotoManipulator() {
 
-	private BufferedImage readClassImage(String name) {
-		try {
-			return ImageIO.read(getClass().getResourceAsStream(name));
-		} catch (IOException ex) {
-			throw new IllegalStateException(ex);
-		}
-	}
+        this.overlayTop = readClassImage("/doge-top.png");
+        this.overlayBottom = readClassImage("/doge-bottom.png");
+    }
 
-	@Override
-	public Photo manipulate(Photo photo) throws IOException {
-		BufferedImage sourceImage = readImage(photo);
-		BufferedImage destinationImage = manipulate(sourceImage);
-		return new BufferedImagePhoto(destinationImage);
-	}
+    private BufferedImage readClassImage(String name) {
 
-	private BufferedImage readImage(Photo photo) throws IOException {
-		InputStream inputStream = photo.getInputStream();
-		try {
-			return ImageIO.read(inputStream);
-		} finally {
-			inputStream.close();
-		}
-	}
+        try (InputStream imgInputStream = new ClassPathResource(name).getInputStream()) {
+            return ImageIO.read(imgInputStream);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-	private BufferedImage manipulate(BufferedImage sourceImage) {
-		double aspectRatio = sourceImage.getHeight() / (double) sourceImage.getWidth();
-		int height = (int) Math.floor(IMAGE_WIDTH * aspectRatio);
-		BufferedImage destinationImage = new BufferedImage(IMAGE_WIDTH, height,
-				BufferedImage.TYPE_INT_RGB);
-		render(sourceImage, destinationImage);
-		return destinationImage;
-	}
+    }
 
-	private void render(BufferedImage sourceImage, BufferedImage destinationImage) {
-		Graphics2D destinationGraphics = destinationImage.createGraphics();
-		try {
-			setGraphicsHints(destinationGraphics);
-			renderBackground(sourceImage, destinationImage, destinationGraphics);
-			renderOverlay(destinationImage, destinationGraphics);
-		} finally {
-			destinationGraphics.dispose();
-		}
-	}
+    @Override
+    public Photo manipulate(Photo photo) throws IOException {
+        BufferedImage sourceImage = readImage(photo);
+        BufferedImage destinationImage = manipulate(sourceImage);
+        return new BufferedImagePhoto(destinationImage);
+    }
 
-	private void renderBackground(BufferedImage sourceImage,
-			BufferedImage destinationImage, Graphics2D destinationGraphics) {
-		destinationGraphics.drawImage(sourceImage, 0, 0, IMAGE_WIDTH,
-				destinationImage.getHeight(), null);
-	}
+    private BufferedImage readImage(Photo photo) throws IOException {
+        try (InputStream inputStream = photo.getInputStream()) {
+            return ImageIO.read(inputStream);
+        }
+    }
 
-	private void renderOverlay(BufferedImage destinationImage,
-			Graphics2D destinationGraphics) {
-		destinationGraphics.drawImage(this.overlayTop, 0, 0, null);
-		int y = destinationImage.getHeight() - this.overlayBottom.getHeight();
-		destinationGraphics.drawImage(this.overlayBottom, 0, y, null);
-	}
+    private BufferedImage manipulate(BufferedImage sourceImage) {
+        double aspectRatio = sourceImage.getHeight() / (double) sourceImage.getWidth();
+        int height = (int) Math.floor(IMAGE_WIDTH * aspectRatio);
+        BufferedImage destinationImage = new BufferedImage(IMAGE_WIDTH, height,
+                BufferedImage.TYPE_INT_RGB);
+        render(sourceImage, destinationImage);
+        return destinationImage;
+    }
 
-	private void setGraphicsHints(Graphics2D graphics) {
-		graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-		graphics.setRenderingHint(RenderingHints.KEY_RENDERING,
-				RenderingHints.VALUE_RENDER_QUALITY);
-		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
-	}
+    private void render(BufferedImage sourceImage, BufferedImage destinationImage) {
+        Graphics2D destinationGraphics = destinationImage.createGraphics();
+        try {
+            setGraphicsHints(destinationGraphics);
+            renderBackground(sourceImage, destinationImage, destinationGraphics);
+            renderOverlay(destinationImage, destinationGraphics);
+        } finally {
+            destinationGraphics.dispose();
+        }
+    }
+
+    private void renderBackground(BufferedImage sourceImage,
+                                  BufferedImage destinationImage, Graphics2D destinationGraphics) {
+        destinationGraphics.drawImage(sourceImage, 0, 0, IMAGE_WIDTH,
+                destinationImage.getHeight(), null);
+    }
+
+    private void renderOverlay(BufferedImage destinationImage,
+                               Graphics2D destinationGraphics) {
+        destinationGraphics.drawImage(this.overlayTop, 0, 0, null);
+        int y = destinationImage.getHeight() - this.overlayBottom.getHeight();
+        destinationGraphics.drawImage(this.overlayBottom, 0, y, null);
+    }
+
+    private void setGraphicsHints(Graphics2D graphics) {
+        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        graphics.setRenderingHint(RenderingHints.KEY_RENDERING,
+                RenderingHints.VALUE_RENDER_QUALITY);
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+    }
 }
