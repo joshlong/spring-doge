@@ -39,7 +39,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @MongoDbIntegrationTest
-public class DomainTest {
+public class DogeServiceTest {
 
     @Autowired
     private UserRepository userRepository;

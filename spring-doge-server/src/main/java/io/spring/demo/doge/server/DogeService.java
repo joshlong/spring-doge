@@ -14,28 +14,49 @@
  * limitations under the License.
  */
 
-package io.spring.demo.doge.server.photos;
+package io.spring.demo.doge.server;
 
+import io.spring.demo.doge.server.photos.DogePhoto;
+import io.spring.demo.doge.server.photos.DogePhotoRepository;
 import io.spring.demo.doge.server.users.User;
+import io.spring.demo.doge.server.users.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 
 /**
- *
  * TODO figure out how to use the filesystem bits -JL
  *
  * @author Josh Long
  * @author Phillip Webb
  */
 @Service
-public class DogePhotoService {
+public class DogeService {
 
-    public void writeDogePhoto( User user , BigInteger bigInteger , MediaType mediaType, byte [] contents ){
+    private final UserRepository userRepository;
+    private final DogePhotoRepository dogePhotoRepository;
+
+    @Autowired
+    public DogeService(UserRepository userRepository, DogePhotoRepository dogePhotoRepository) {
+        this.userRepository = userRepository;
+        this.dogePhotoRepository = dogePhotoRepository;
+    }
+
+    public DogePhoto getDogePhotoById(BigInteger id) {
+        return this.dogePhotoRepository.findOne(id);
+    }
+
+    public User getUserById(String username) {
+        return this.userRepository.findOne(username);
+    }
+
+    public void writeDogePhoto(User user, BigInteger bigInteger, MediaType mediaType, byte[] contents) {
 
     }
-    public DogePhoto readDogePhoto(User user , BigInteger dogeId){
+
+    public DogePhoto readDogePhoto(User user, BigInteger dogeId) {
         return null;
     }
 
