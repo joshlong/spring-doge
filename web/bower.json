@@ -6,20 +6,26 @@
     "requirejs-domready": "~2.0",
     "sockjs": "~0.3",
     "bootstrap": "~3.1.1",
-    "jquery": "git://github.com/bowerjs/jquery.git#~1.8",
+    "jquery": "2.0.3",
     "html5shiv": "~3.6",
     "stomp": "stomp-websocket#~2.3.1",
-    "angular-resource": "1.2.6",
-    "angular-ui-router": "0.2.7",
-    "angular-busy": "~3.0.2",
-    "angular-growl": "~0.4.0",
-    "angular-highlightjs": "~0.2.5"
+    "atmosphere": "2.1.2",
+    "jquery-atmosphere": "2.1.2",
+    "bootstrap-sass": "twbs/bootstrap-sass#~3.1.1",
+    "modernizr": "2.7.1",
+    "angular": "1.2.13",
+    "json3": "3.3.0",
+    "angular-route": "1.2.13",
+    "angular-resource": "1.2.13",
+    "angular-cookies": "1.2.13",
+    "angular-sanitize": "1.2.13",
+    "angular-translate": "2.0.0",
+    "angular-translate-storage-cookie": "2.0.0",
+    "angular-translate-loader-static-files": "2.0.0",
+    "angular-dynamic-locale": "0.1.1",
+    "angular-i18n": "1.2.5"
   },
   "ignore": [
     "test"
-  ],
-  "resolutions": {
-    "jquery": "~1.8",
-    "angular": "1.2.6"
-  }
+  ]
 }
