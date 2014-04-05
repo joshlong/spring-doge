@@ -1,6 +1,7 @@
 .classpath
 *iml
 .idea
+.gitignore~
 .project
 .settings
 target
