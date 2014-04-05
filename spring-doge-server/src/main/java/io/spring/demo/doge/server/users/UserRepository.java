@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.demo.doge.server.domain;
+package io.spring.demo.doge.server.users;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
@@ -22,7 +22,12 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  * The {@link User} repository.
  * 
  * @author Phillip Webb
+ * @author Josh Long
  */
 public interface UserRepository extends MongoRepository<User, String> {
+
+    // will be useful in tying in Spring Security
+    User findByName (String username) ;
+
 
 }

@@ -16,33 +16,30 @@
 
 package io.spring.demo.doge.server;
 
-import io.spring.demo.doge.server.domain.User;
-import io.spring.demo.doge.server.domain.UserRepository;
-
-import javax.annotation.PostConstruct;
-
+import io.spring.demo.doge.server.users.User;
+import io.spring.demo.doge.server.users.UserRepository;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
  * Insert some sample data to use.
- * 
+ *
  * @author Phillip Webb
  */
 @Component
-public class SampleData {
+public class ApplicationDataInitializer implements InitializingBean {
 
-	private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
-	@Autowired
-	public SampleData(UserRepository userRepository) {
-		this.userRepository = userRepository;
-	}
+    @Autowired
+    public ApplicationDataInitializer(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
-	@PostConstruct
-	protected void addTestData() {
-		this.userRepository.save(new User("joshlong", "Josh Long"));
-		this.userRepository.save(new User("philwebb", "Phil Webb"));
-	}
-
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.userRepository.save(new User("joshlong", "Josh Long"));
+        this.userRepository.save(new User("philwebb", "Phil Webb"));
+    }
 }

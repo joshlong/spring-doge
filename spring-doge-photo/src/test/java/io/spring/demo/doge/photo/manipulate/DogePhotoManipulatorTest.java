@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -23,7 +25,11 @@ public class DogePhotoManipulatorTest {
 
 	@Test
 	public void testDogeService() throws Exception {
-		Photo photo = new FilePhoto(new File("src/test/resources/thehoff.jpg"));
+
+        Resource resource  = new ClassPathResource("thehoff.jpg") ;
+
+		Photo photo = new FilePhoto(
+                new File("src/test/resources/thehoff.jpg"));
 		Photo manipulatedPhoto = manipulator.manipulate(photo);
 		File target = new File("target/test-image-output");
 		target.mkdirs();

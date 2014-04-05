@@ -41,8 +41,8 @@ public class DogePhotoManipulator implements PhotoManipulator {
 	private final BufferedImage overlayBottom;
 
 	public DogePhotoManipulator() {
-		this.overlayTop = readClassImage("doge-top.png");
-		this.overlayBottom = readClassImage("doge-bottom.png");
+		this.overlayTop = readClassImage("photos-top.png");
+		this.overlayBottom = readClassImage("photos-bottom.png");
 	}
 
 	private BufferedImage readClassImage(String name) {

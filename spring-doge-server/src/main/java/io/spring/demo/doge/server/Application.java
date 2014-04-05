@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import com.mongodb.Mongo;
 
 /**
- * Main doge server application.
+ * Main photos server application.
  * 
  * @author Josh Long
  * @author Phillip Webb
@@ -49,13 +49,9 @@ public class Application {
 		MultiPartConfigFactory factory = new MultiPartConfigFactory();
 		factory.setMaxFileSize("10Mb");
 		return factory.createMultipartConfig();
-
-	}
-
-	// FIXME move?
+    }
 
 	@Bean
-	@Qualifier("photoFolder")
 	public MongoFolder photoFolder(Mongo mongo) {
 		return new MongoFolder(mongo.getDB("photos"));
 	}

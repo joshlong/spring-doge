@@ -3,11 +3,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>io.spring.demo.doge</groupId>
-		<artifactId>spring-doge</artifactId>
+		<groupId>io.spring.demo.dogePhoto</groupId>
+		<artifactId>spring-dogePhoto</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-doge-client</artifactId>
+	<artifactId>spring-dogePhoto-client</artifactId>
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
 	</properties>

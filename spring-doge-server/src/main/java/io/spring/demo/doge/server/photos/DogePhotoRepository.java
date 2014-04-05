@@ -14,30 +14,24 @@
  * limitations under the License.
  */
 
-package io.spring.demo.doge.server.domain;
+package io.spring.demo.doge.server.photos;
 
-import org.springframework.data.annotation.Id;
+import java.math.BigInteger;
+
+import io.spring.demo.doge.server.users.User;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
- * A single user of the system. Each {@link User} may submit one or more {@link Doge}s.
+ * The {@link DogePhoto} repository.
  * 
  * @author Phillip Webb
- * @see Doge
+ * @author Josh Long
  */
-public class User {
+public interface DogePhotoRepository extends MongoRepository<DogePhoto, BigInteger> {
 
-	@Id
-	private String id;
+	Iterable<DogePhoto> findByUser(User user);
 
-	private String name;
+	DogePhoto findByIdAndUser(BigInteger id, User user);
 
-	public User(String id, String name) {
-		this.id = id;
-		this.name = name;
-	}
-
-	public String getName() {
-		return this.name;
-	}
 
 }
