@@ -48,4 +48,8 @@ public class Doge {
 	public String getTitle() {
 		return this.title;
 	}
+
+	public BigInteger getId() {
+		return this.id;
+	}
 }

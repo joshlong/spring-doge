@@ -27,10 +27,6 @@ import org.springframework.boot.context.embedded.MultiPartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.MongoDbFactory;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
 import com.mongodb.Mongo;
 
@@ -59,20 +55,9 @@ public class Application {
 	// FIXME move?
 
 	@Bean
-	public MongoDbFactory mongoDbFactory(Mongo mongo) throws Exception {
-		return new SimpleMongoDbFactory(mongo, "fs");
-	}
-
-	@Bean
-	public GridFsTemplate gridFsTemplate(MongoDbFactory mongoDbFactory,
-			MongoTemplate mongoTemplate) {
-		return new GridFsTemplate(mongoDbFactory, mongoTemplate.getConverter());
-	}
-
-	@Bean
 	@Qualifier("photoFolder")
-	public MongoFolder photoFolder(MongoDbFactory dbFactory) {
-		return new MongoFolder(dbFactory.getDb());
+	public MongoFolder photoFolder(Mongo mongo) {
+		return new MongoFolder(mongo.getDB("photos"));
 	}
 
 	public static void main(String[] args) {

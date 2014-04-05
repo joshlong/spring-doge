@@ -16,6 +16,10 @@
 
 package io.spring.demo.doge.server.service;
 
+import io.spring.demo.doge.photo.Photo;
+import io.spring.demo.doge.server.domain.Doge;
+import io.spring.demo.doge.server.domain.User;
+
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,5 +27,14 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class DogeService {
+
+	/**
+	 * @param user
+	 * @param multipartFilePhoto
+	 */
+	public Doge addDoge(User user, Photo photo) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
 
 }

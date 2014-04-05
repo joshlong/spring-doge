@@ -16,12 +16,30 @@
 
 package io.spring.demo.doge.server.web;
 
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
 
 /**
  * @author pwebb
  */
-@RestController
-public class WebSockets {
+public class Response<T> {
 
+	// getHeaders
+
+	// getHeaders()
+
+	public static Response<Void> ok() {
+		return Response.forStatus(HttpStatus.OK);
+	}
+
+	public static <T> Response<T> ok(T body) {
+		return forStatus(HttpStatus.OK, body);
+	}
+
+	private static <T> Response<T> forStatus(HttpStatus status) {
+		return forStatus(status, null);
+	}
+
+	private static <T> Response<T> forStatus(HttpStatus status, T body) {
+		return null;
+	}
 }

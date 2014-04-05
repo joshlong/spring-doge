@@ -29,4 +29,6 @@ public interface DogeRepository extends MongoRepository<Doge, BigInteger> {
 
 	Iterable<Doge> findByUser(User user);
 
+	Doge findOneByIdAndUser(BigInteger id, User user);
+
 }

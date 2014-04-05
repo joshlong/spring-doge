@@ -61,4 +61,17 @@ public class DomainTest {
 		assertThat(found.hasNext(), equalTo(false));
 	}
 
+	@Test
+	public void findDoge() throws Exception {
+		User user = new User("joshlong", "Josh Long");
+		Doge doge = new Doge(user, "test");
+		user = this.userRepository.save(user);
+		doge = this.dogeRepository.save(doge);
+		System.out.println(doge.getId());
+		Doge findOne = this.dogeRepository.findOne(doge.getId());
+		System.out.println(findOne);
+		Doge found = this.dogeRepository.findOneByIdAndUser(doge.getId(), user);
+		assertThat(found.getTitle(), equalTo("test"));
+	}
+
 }
