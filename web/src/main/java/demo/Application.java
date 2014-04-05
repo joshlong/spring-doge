@@ -77,7 +77,7 @@ class PhotoUploadMvcController {
     private final PhotoService photoService;
 
     @Autowired
-    public PhotoUploadMvcController(PhotoService photoService) {
+    PhotoUploadMvcController(PhotoService photoService) {
         this.photoService = photoService;
     }
 
@@ -95,10 +95,11 @@ class PhotoUploadMvcController {
 class PhotoUploadRestController {
 
     public static final String PHOTO_URI = "/users/{user}/photo";
+
     private final PhotoService photoService;
 
     @Autowired
-    public PhotoUploadRestController(PhotoService photoService) {
+    PhotoUploadRestController(PhotoService photoService) {
         this.photoService = photoService;
     }
 

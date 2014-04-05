@@ -6,7 +6,8 @@ require.config({
         jquery: 'lib/jquery/jquery',
         bootstrap: 'lib/bootstrap/bootstrap',
         ngResource: 'lib/angular-resource/angular-resource',
-        ngRoute: 'lib/angular-route/angular-route'
+        ngRoute: 'lib/angular-route/angular-route',
+        sockjs : 'lib/sockjs/sockjs'
     },
     shim: {
         angular: {
@@ -15,7 +16,6 @@ require.config({
         bootstrap: {
             deps: ['jquery']
         },
-
         cgBusy: {
             deps: ['promiseTracker']
         },
@@ -23,9 +23,6 @@ require.config({
             deps: ['angular']
         },
         'ngResource': {
-            deps: ['angular']
-        },
-        'ngGrowl': {
             deps: ['angular']
         }
     }
@@ -37,7 +34,9 @@ define([
     'app'
 ], function (require, angular) {
     'use strict';
-
+    require(['sockjs'],function(sockjs){
+       console.log('loaded sockjs!');
+    });
     require(['domReady!'], function (document) {
         angular.bootstrap(document, ['doge']);
         console.log('just called angular.bootstrap!')

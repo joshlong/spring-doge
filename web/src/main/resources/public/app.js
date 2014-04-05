@@ -1,4 +1,4 @@
-define([ 'angular', 'ngResource' ], function (angular) {
+define([ 'angular', 'ngResource' , 'sockjs' ], function (angular) {
     'use strict';
 
 
