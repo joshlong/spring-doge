@@ -52,7 +52,9 @@ define([
         client.connect({}, function (frame) {
             console.log('Connected ' + frame);
             client.subscribe("/topic/alarms", function (message) {
-                window.alert(JSON.parse(message.body));
+                var uri = JSON.parse( message.body).dogePhotoUri ;
+                console.log ( uri  +'');
+                window.alert('A new doge-ified image has been posted! '+ uri );
             });
         }, function (error) {
             console.log("STOMP protocol error " + error);

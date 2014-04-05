@@ -23,7 +23,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Assert;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +33,9 @@ import org.springframework.web.util.UriComponents;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.net.URI;
+import java.util.Collections;
+import java.util.concurrent.Callable;
 
 /**
  * @author Phillip Webb
@@ -47,9 +50,12 @@ public class DogeRestController {
 
     private final DogeService dogeService;
 
+    private final SimpMessagingTemplate simpMessagingTemplate;
+
     @Autowired
-    public DogeRestController(DogeService dogeService) {
+    public DogeRestController(DogeService dogeService, SimpMessagingTemplate simpMessagingTemplate) {
         this.dogeService = dogeService;
+        this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "{id}")
@@ -58,18 +64,27 @@ public class DogeRestController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "{id}/doge")
-    public ResponseEntity<?> putDoge(@PathVariable String id,
-                                     @RequestParam(required = false) String title,
-                                     @RequestParam MultipartFile file) throws IOException {
+    public Callable<ResponseEntity<?>> putDoge(@PathVariable String id,
+                                               @RequestParam(required = false) String title,
+                                               @RequestParam MultipartFile file) throws IOException {
+        return () -> {
+            DogePhoto dogePhoto = this.dogeService.addDogePhoto(id, title, MediaType.parseMediaType(file.getContentType()), file.getBytes());
 
-        DogePhoto dogePhoto = this.dogeService.addDogePhoto(id, title, MediaType.parseMediaType(file.getContentType()), file.getBytes());
+            UriComponents location = MvcUriComponentsBuilder.fromMethodCall(
+                    userControllerProxy.getDoge(id, dogePhoto.getId())).build();
 
-        UriComponents location = MvcUriComponentsBuilder.fromMethodCall(
-                userControllerProxy.getDoge(id, dogePhoto.getId())).build();
+            URI uri = location.toUri();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(location.toUri());
-        return new ResponseEntity<>(headers, HttpStatus.CREATED);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(uri);
+
+            this.simpMessagingTemplate.convertAndSend(
+                    "/topic/alarms", Collections.singletonMap("dogePhotoUri", uri));
+
+
+            return new ResponseEntity<>(headers, HttpStatus.CREATED);
+        };
+
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "{id}/doge/{dogeId}")
@@ -79,9 +94,9 @@ public class DogeRestController {
         DogePhoto dogePhoto = this.dogeService.getDogePhotoById(dogeId);
         try (InputStream dogePhotoInputStream = this.dogeService.readDogePhotoContents(id, dogePhoto.getId())) {
             byte[] bytes = FileCopyUtils.copyToByteArray(dogePhotoInputStream);
-            HttpHeaders httpHeaders = new HttpHeaders() ;
-            httpHeaders.setContentType( MediaType.parseMediaType(dogePhoto.getMediaType()));
-            return new ResponseEntity<>(  bytes, httpHeaders,HttpStatus.OK);
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setContentType(MediaType.parseMediaType(dogePhoto.getMediaType()));
+            return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);
         }
     }
 

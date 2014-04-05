@@ -1,13 +1,11 @@
-<!doctype html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"  >
 <head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <title>
-        Such Spring! Very Boot.
+        Spring Doge: Such Boot!
     </title>
     <meta name="description" content="A simple application demonstrating how to use Spring Boot for evil."/>
     <meta name="viewport" content="width=device-width"/>
@@ -17,10 +15,10 @@
 <body>
 
 <!--[if lt IE 7]>
-    <p>
-        You are using an <strong>outdated</strong> browser.
-        Please upgrade your browser to improve your experience.
-    </p>
+<p>
+    You are using an <strong>outdated</strong> browser.
+    Please upgrade your browser to improve your experience.
+</p>
 <![endif]-->
 
 <div ng-controller="DogeController" id="console">
@@ -28,13 +26,14 @@
     <h1>Upload an Image
     </h1>
 
-    <input type="file" filelist-bind-name="files"/>
+    Welcome <span th:text="${userId}">phillwebb</span>.
 
-    <div>selected files :
-        <pre> {{ files }}</pre>
-    </div>
+    <form enctype="multipart/form-data" method="post"   th:action="${'/users/'+ userId+'/doge'}">
 
+        <input type="file" name="file"/>
 
+        <input type="submit"/>
+    </form>
 
 </div>
 

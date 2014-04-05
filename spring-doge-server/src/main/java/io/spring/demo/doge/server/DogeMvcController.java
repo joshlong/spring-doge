@@ -1,13 +1,10 @@
 package io.spring.demo.doge.server;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-import java.util.Date;
 
 /**
  * Handles things related to presenting information tot he client, such as websockets and views
@@ -24,18 +21,10 @@ public class DogeMvcController {
         this.messagingTemplate = messagingTemplate;
     }
 
-
     @RequestMapping("/client")
-    String client(){
-        return "client";
-    }
-
-    @RequestMapping("/go")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    void go() {
-        this.messagingTemplate.convertAndSend(
-                "/topic/alarms",  (String.format("Hello, %tc", new Date())));
-
+    String client(Model model) { // todo derive this from security principal once integrated
+        model.addAttribute("userId", "joshlong");
+        return "client" ;
     }
 
 
