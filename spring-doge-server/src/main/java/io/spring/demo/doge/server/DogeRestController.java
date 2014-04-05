@@ -16,14 +16,23 @@
 
 package io.spring.demo.doge.server;
 
+import io.spring.demo.doge.server.photos.DogePhoto;
 import io.spring.demo.doge.server.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
+import org.springframework.web.util.UriComponents;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
 
 /**
  * @author Phillip Webb
@@ -41,7 +50,6 @@ public class DogeRestController {
     @Autowired
     public DogeRestController(DogeService dogeService) {
         this.dogeService = dogeService;
-
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "{id}")
@@ -50,35 +58,31 @@ public class DogeRestController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "{id}/doge")
-    public void putDoge(@PathVariable String id,
-                        @RequestParam(required = false) String title,
-                        @RequestParam MultipartFile file) throws IOException {
-        this.dogeService.addDogePhoto(id, title, MediaType.parseMediaType(file.getContentType()), file.getBytes());
-    }
+    public ResponseEntity<?> putDoge(@PathVariable String id,
+                                     @RequestParam(required = false) String title,
+                                     @RequestParam MultipartFile file) throws IOException {
 
-/*1
-    @RequestMapping(method = RequestMethod.POST, value = "{id}/doge")
-    public ResponseEntity<Void> putDoge(@PathVariable String id,
-                                        @RequestParam MultipartFile file) {
-        User user = this.userRepository.findOne(id);
-       // todo
-//        DogePhoto dogePhoto =  this.dogeService.(user, new MultipartFilePhoto(file));
-    DogePhoto dogePhoto  = null ;
+        DogePhoto dogePhoto = this.dogeService.addDogePhoto(id, title, MediaType.parseMediaType(file.getContentType()), file.getBytes());
+
         UriComponents location = MvcUriComponentsBuilder.fromMethodCall(
                 userControllerProxy.getDoge(id, dogePhoto.getId())).build();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(location.toUri());
-        return new ResponseEntity<>(  headers, HttpStatus.FOUND);
+        return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "{id}/doge/{doge}")
-    public ResponseEntity<DogePhoto> getDoge(@PathVariable String id,
-                                            @PathVariable BigInteger dogeId) {
-        User user = this.userRepository.findOne(id);
-        DogePhoto dogePhoto = this.dogePhotoRepository.findByIdAndUser( dogeId, user) ;
-        return null;
-       //ResponseEntity<byte[]> responseEntity  = new ResponseEntity<>() ;
-    }*/
+    @RequestMapping(method = RequestMethod.GET, value = "{id}/doge/{dogeId}")
+    public ResponseEntity<byte[]> getDoge(@PathVariable String id,
+                                          @PathVariable BigInteger dogeId) throws IOException {
+        User user = this.dogeService.getUserById(id);
+        DogePhoto dogePhoto = this.dogeService.getDogePhotoById(dogeId);
+        try (InputStream dogePhotoInputStream = this.dogeService.readDogePhotoContents(id, dogePhoto.getId())) {
+            byte[] bytes = FileCopyUtils.copyToByteArray(dogePhotoInputStream);
+            HttpHeaders httpHeaders = new HttpHeaders() ;
+            httpHeaders.setContentType( MediaType.parseMediaType(dogePhoto.getMediaType()));
+            return new ResponseEntity<>(  bytes, httpHeaders,HttpStatus.OK);
+        }
+    }
 
 }

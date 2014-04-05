@@ -16,9 +16,8 @@
 
 package io.spring.demo.doge.server;
 
+import com.mongodb.gridfs.GridFSDBFile;
 import io.spring.demo.doge.filesystem.File;
-import io.spring.demo.doge.filesystem.Resource;
-import io.spring.demo.doge.filesystem.ResourceOperation;
 import io.spring.demo.doge.filesystem.mongo.MongoFolder;
 import io.spring.demo.doge.server.photos.DogePhoto;
 import io.spring.demo.doge.server.photos.DogePhotoRepository;
@@ -27,7 +26,13 @@ import io.spring.demo.doge.server.users.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
 
 /**
@@ -44,53 +49,53 @@ public class DogeService {
     private final MongoFolder folder;
 
     @Autowired
-    public DogeService(UserRepository userRepository, DogePhotoRepository dogePhotoRepository, MongoFolder resources ) {
+    public DogeService(UserRepository userRepository, DogePhotoRepository dogePhotoRepository, MongoFolder resources) {
         this.userRepository = userRepository;
         this.dogePhotoRepository = dogePhotoRepository;
         this.folder = resources;
     }
 
+
     public DogePhoto getDogePhotoById(BigInteger id) {
         return this.dogePhotoRepository.findOne(id);
     }
 
-    public User getUserById(String user ) {
+    public User getUserById(String user) {
         return this.userRepository.findOne(user);
     }
 
-    public void addDogePhoto(String user ,
+    public DogePhoto addDogePhoto(String username,
                              String title,
                              MediaType mediaType,
                              byte[] contents) {
-
-         File file = folder.getFile( "doge" + System.currentTimeMillis() );
-        file.performOperation(  new ResourceOperation<Resource>() {
-            @Override
-            public void perform(Resource resource) {
-
-            }
-        });
-
-      /*  List<GridFSDBFile> gridFSDBFiles = gridFSDBFiles(userId);
-        for (GridFSDBFile gridFSDBFile : gridFSDBFiles) {
-            this.fileSytem.delete(new Query().addCriteria(GridFsCriteria.whereMetaData()
-                    .is(gridFSDBFile.getMetaData())));
+        User user = this.userRepository.findOne(username);
+        String finalTitle = StringUtils.hasText(title) ? title : "";
+        DogePhoto photo = this.dogePhotoRepository.save(new DogePhoto(user, mediaType.toString(), finalTitle));
+        BigInteger photoId = photo.getId();
+        File file = folder.getFile(fileNameForFile(photoId));
+        file.createIfMissing();
+        try (
+                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(contents);
+                OutputStream fileOutputStream = file.getContent().asOutputStream()) {
+            StreamUtils.copy(byteArrayInputStream, fileOutputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        DBObject dbObject = new BasicDBObject();
-        dbObject.put("userId", userId);
-        dbObject.put("when", new Date().getTime());
-        dbObject.put("contentType", mediaType.toString());
-        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(photo)) {
-
-            this.fileSytem.store(byteArrayInputStream, Long.toString(userId), dbObject);
-
-            this.photoRepository.save(new DogePhoto(userId, mediaType.toString()));
-        }
-*/
+        return photo;
     }
 
-    public DogePhoto readDogePhoto(String user, BigInteger dogeId) {
-        return null;
+    private String fileNameForFile(BigInteger photoId) {
+        return photoId.toString();
+    }
+
+
+    public InputStream readDogePhotoContents( String username, BigInteger bigInteger ){
+        File file = this.folder.getFile(fileNameForFile( bigInteger));
+        return file.getContent().asInputStream();
+    }
+
+    public DogePhoto readDogePhoto(String username, BigInteger dogeId) {
+        return this.dogePhotoRepository.findOne(dogeId);
     }
 
 

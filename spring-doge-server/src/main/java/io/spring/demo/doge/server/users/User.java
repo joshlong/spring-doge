@@ -22,6 +22,7 @@ import org.springframework.data.annotation.Id;
  * A single user of the system. Each {@link User} may submit one or more {@link io.spring.demo.doge.server.photos.DogePhoto}s.
  * 
  * @author Phillip Webb
+ * @author Josh Long
  * @see io.spring.demo.doge.server.photos.DogePhoto
  */
 public class User {
@@ -31,7 +32,15 @@ public class User {
 
 	private String name;
 
-	public User(String id, String name) {
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
+    public User(String id, String name) {
 		this.id = id;
 		this.name = name;
 	}

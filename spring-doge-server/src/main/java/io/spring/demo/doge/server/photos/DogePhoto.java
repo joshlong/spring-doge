@@ -42,7 +42,6 @@ public class DogePhoto {
     public DogePhoto(User user, String mediaType, String title) {
         Assert.notNull(user);
         Assert.hasText(mediaType);
-        Assert.hasText(title);
         this.user = user;
         this.mediaType = MediaType.parseMediaType(mediaType).toString();
         this.title = title;

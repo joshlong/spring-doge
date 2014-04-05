@@ -22,6 +22,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+
 /**
  * Insert some sample data to use.
  *
@@ -39,7 +41,9 @@ public class ApplicationDataInitializer implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        this.userRepository.save(new User("joshlong", "Josh Long"));
-        this.userRepository.save(new User("philwebb", "Phil Webb"));
+        Arrays.asList(new User("joshlong", "Josh Long"), new User("philwebb", "Phil Webb"))
+                .forEach(user -> {
+            System.out.println(userRepository.save(user));
+        });
     }
 }
