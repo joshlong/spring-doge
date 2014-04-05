@@ -32,6 +32,4 @@ public interface DogePhotoRepository extends MongoRepository<DogePhoto, BigInteg
 	Iterable<DogePhoto> findByUser(User user);
 
 	DogePhoto findByIdAndUser(BigInteger id, User user);
-
-
 }

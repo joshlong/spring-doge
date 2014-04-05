@@ -16,6 +16,10 @@
 
 package io.spring.demo.doge.server;
 
+import io.spring.demo.doge.filesystem.File;
+import io.spring.demo.doge.filesystem.Resource;
+import io.spring.demo.doge.filesystem.ResourceOperation;
+import io.spring.demo.doge.filesystem.mongo.MongoFolder;
 import io.spring.demo.doge.server.photos.DogePhoto;
 import io.spring.demo.doge.server.photos.DogePhotoRepository;
 import io.spring.demo.doge.server.users.User;
@@ -37,26 +41,55 @@ public class DogeService {
 
     private final UserRepository userRepository;
     private final DogePhotoRepository dogePhotoRepository;
+    private final MongoFolder folder;
 
     @Autowired
-    public DogeService(UserRepository userRepository, DogePhotoRepository dogePhotoRepository) {
+    public DogeService(UserRepository userRepository, DogePhotoRepository dogePhotoRepository, MongoFolder resources ) {
         this.userRepository = userRepository;
         this.dogePhotoRepository = dogePhotoRepository;
+        this.folder = resources;
     }
 
     public DogePhoto getDogePhotoById(BigInteger id) {
         return this.dogePhotoRepository.findOne(id);
     }
 
-    public User getUserById(String username) {
-        return this.userRepository.findOne(username);
+    public User getUserById(String user ) {
+        return this.userRepository.findOne(user);
     }
 
-    public void writeDogePhoto(User user, BigInteger bigInteger, MediaType mediaType, byte[] contents) {
+    public void addDogePhoto(String user ,
+                             String title,
+                             MediaType mediaType,
+                             byte[] contents) {
 
+         File file = folder.getFile( "doge" + System.currentTimeMillis() );
+        file.performOperation(  new ResourceOperation<Resource>() {
+            @Override
+            public void perform(Resource resource) {
+
+            }
+        });
+
+      /*  List<GridFSDBFile> gridFSDBFiles = gridFSDBFiles(userId);
+        for (GridFSDBFile gridFSDBFile : gridFSDBFiles) {
+            this.fileSytem.delete(new Query().addCriteria(GridFsCriteria.whereMetaData()
+                    .is(gridFSDBFile.getMetaData())));
+        }
+        DBObject dbObject = new BasicDBObject();
+        dbObject.put("userId", userId);
+        dbObject.put("when", new Date().getTime());
+        dbObject.put("contentType", mediaType.toString());
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(photo)) {
+
+            this.fileSytem.store(byteArrayInputStream, Long.toString(userId), dbObject);
+
+            this.photoRepository.save(new DogePhoto(userId, mediaType.toString()));
+        }
+*/
     }
 
-    public DogePhoto readDogePhoto(User user, BigInteger dogeId) {
+    public DogePhoto readDogePhoto(String user, BigInteger dogeId) {
         return null;
     }
 

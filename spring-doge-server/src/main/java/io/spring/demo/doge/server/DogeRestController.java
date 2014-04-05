@@ -18,11 +18,12 @@ package io.spring.demo.doge.server;
 
 import io.spring.demo.doge.server.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
+
+import java.io.IOException;
 
 /**
  * @author Phillip Webb
@@ -40,13 +41,22 @@ public class DogeRestController {
     @Autowired
     public DogeRestController(DogeService dogeService) {
         this.dogeService = dogeService;
+
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "{id}")
     public User getUser(@PathVariable String id) {
         return this.dogeService.getUserById(id);
     }
-/*
+
+    @RequestMapping(method = RequestMethod.POST, value = "{id}/doge")
+    public void putDoge(@PathVariable String id,
+                        @RequestParam(required = false) String title,
+                        @RequestParam MultipartFile file) throws IOException {
+        this.dogeService.addDogePhoto(id, title, MediaType.parseMediaType(file.getContentType()), file.getBytes());
+    }
+
+/*1
     @RequestMapping(method = RequestMethod.POST, value = "{id}/doge")
     public ResponseEntity<Void> putDoge(@PathVariable String id,
                                         @RequestParam MultipartFile file) {
