@@ -16,8 +16,6 @@
 
 package io.spring.demo.doge.filesystem;
 
-import io.spring.demo.doge.filesystem.AbstractFileContent;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -29,9 +27,11 @@ import java.io.Writer;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.core.io.WritableResource;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -58,6 +58,11 @@ public class FileContentTest {
 		this.content = new AbstractFileContent() {
 
 			@Override
+			protected String getDescription() {
+				return "test";
+			}
+
+			@Override
 			public OutputStream asOutputStream() {
 				return FileContentTest.this.outputStream;
 			}
@@ -66,6 +71,7 @@ public class FileContentTest {
 			public InputStream asInputStream() {
 				return FileContentTest.this.inputStream;
 			}
+
 		};
 	}
 
@@ -91,6 +97,17 @@ public class FileContentTest {
 		byte[] bytes = this.content.asBytes();
 		assertThat(bytes, is(equalTo(this.CONTENT.getBytes())));
 		verify(this.inputStream).close();
+	}
+
+	@Test
+	public void shouldGetAsReadable() throws Exception {
+		WritableResource resource = this.content.asResource();
+		assertThat(resource.getDescription(), equalTo("test"));
+		assertThat(resource.isReadable(), equalTo(true));
+		assertThat(resource.getInputStream(),
+				sameInstance((InputStream) this.inputStream));
+		assertThat(resource.getOutputStream(),
+				sameInstance((OutputStream) this.outputStream));
 	}
 
 	@Test

@@ -39,6 +39,16 @@ public abstract class AbstractReadOnlyFile implements File {
 	private final FileContent content = new AbstractFileContent() {
 
 		@Override
+		protected boolean isWritable() {
+			return false;
+		}
+
+		@Override
+		protected String getDescription() {
+			return AbstractReadOnlyFile.this.toString();
+		}
+
+		@Override
 		public OutputStream asOutputStream() {
 			throw newReadOnlyResourceException();
 		}

@@ -47,7 +47,7 @@ public class MongoFolder extends StoredFolder {
 	}
 
 	/**
-	 * Create a new {@link MongoFolder} using rhe specified mongo database. The data will
+	 * Create a new {@link MongoFolder} using the specified mongo database. The data will
 	 * be stored in {@link GridFS#DEFAULT_BUCKET defaul bucket}.
 	 * @param db the mongo database
 	 */

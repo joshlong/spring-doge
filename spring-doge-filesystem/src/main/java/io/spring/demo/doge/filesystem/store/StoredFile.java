@@ -119,6 +119,11 @@ public abstract class StoredFile extends StoredResource implements File {
 	private class StoredFileContent extends AbstractFileContent {
 
 		@Override
+		protected String getDescription() {
+			return StoredFile.this.toString();
+		}
+
+		@Override
 		public InputStream asInputStream() {
 			return getStore().getInputStream();
 		}

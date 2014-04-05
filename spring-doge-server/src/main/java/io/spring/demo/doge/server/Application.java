@@ -16,8 +16,11 @@
 
 package io.spring.demo.doge.server;
 
+import io.spring.demo.doge.filesystem.mongo.MongoFolder;
+
 import javax.servlet.MultipartConfigElement;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.MultiPartConfigFactory;
@@ -64,6 +67,12 @@ public class Application {
 	public GridFsTemplate gridFsTemplate(MongoDbFactory mongoDbFactory,
 			MongoTemplate mongoTemplate) {
 		return new GridFsTemplate(mongoDbFactory, mongoTemplate.getConverter());
+	}
+
+	@Bean
+	@Qualifier("photoFolder")
+	public MongoFolder photoFolder(MongoDbFactory dbFactory) {
+		return new MongoFolder(dbFactory.getDb());
 	}
 
 	public static void main(String[] args) {

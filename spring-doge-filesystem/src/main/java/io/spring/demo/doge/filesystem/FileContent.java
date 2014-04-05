@@ -23,6 +23,8 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 
+import org.springframework.core.io.WritableResource;
+
 /**
  * Provides access to {@link File} content in a variety of ways.
  * 
@@ -82,6 +84,14 @@ public interface FileContent {
 	 * @throws ResourceException
 	 */
 	byte[] asBytes() throws ResourceException;
+
+	/**
+	 * Return a {@link org.springframework.core.io.WritableResource} that can be used to
+	 * read or write the contents.
+	 * @return the resource
+	 * @throws ResourceException
+	 */
+	WritableResource asResource();
 
 	/**
 	 * Copy the contents of the file to another stream, closing the stream when complete.

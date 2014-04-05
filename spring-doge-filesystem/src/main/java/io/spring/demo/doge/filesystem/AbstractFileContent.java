@@ -27,6 +27,8 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
+import org.springframework.core.io.AbstractResource;
+import org.springframework.core.io.WritableResource;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 
@@ -36,6 +38,12 @@ import org.springframework.util.FileCopyUtils;
  * @author Phillip Webb
  */
 public abstract class AbstractFileContent implements FileContent {
+
+	protected abstract String getDescription();
+
+	protected boolean isWritable() {
+		return true;
+	}
 
 	@Override
 	public Reader asReader() {
@@ -77,6 +85,11 @@ public abstract class AbstractFileContent implements FileContent {
 		catch (IOException e) {
 			throw new ResourceException(e);
 		}
+	}
+
+	@Override
+	public WritableResource asResource() {
+		return new FileContentResource();
 	}
 
 	@Override
@@ -175,4 +188,32 @@ public abstract class AbstractFileContent implements FileContent {
 
 	@Override
 	public abstract OutputStream asOutputStream();
+
+	/**
+	 * Adapter class to present {@link AbstractFileContent} as a {@link WritableResource}.
+	 */
+	private class FileContentResource extends AbstractResource implements
+			WritableResource {
+
+		@Override
+		public String getDescription() {
+			return AbstractFileContent.this.getDescription();
+		}
+
+		@Override
+		public InputStream getInputStream() throws IOException {
+			return AbstractFileContent.this.asInputStream();
+		}
+
+		@Override
+		public boolean isWritable() {
+			return AbstractFileContent.this.isWritable();
+		}
+
+		@Override
+		public OutputStream getOutputStream() throws IOException {
+			return AbstractFileContent.this.asOutputStream();
+		}
+
+	}
 }
