@@ -14,23 +14,30 @@
  * limitations under the License.
  */
 
-package io.spring.demo.doge.photo;
+package io.spring.demo.doge.server.domain;
 
-import java.io.IOException;
-import java.io.InputStream;
+import org.springframework.data.annotation.Id;
 
 /**
- * Encapsulation of a photo.
+ * A single user of the system. Each {@link User} may submit one or more {@link Doge}s.
  * 
  * @author Phillip Webb
+ * @see Doge
  */
-public interface Photo {
+public class User {
 
-	/**
-	 * @return a new {@link InputStream} containing photo data as a JPEG. The caller is
-	 * responsible for closing the stream.
-	 * @throws IOException
-	 */
-	public InputStream getInputStream() throws IOException;
+	@Id
+	private String id;
+
+	private String name;
+
+	public User(String id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
+	public String getName() {
+		return this.name;
+	}
 
 }

@@ -14,23 +14,14 @@
  * limitations under the License.
  */
 
-package io.spring.demo.doge.photo;
+package io.spring.demo.doge.server.web;
 
-import java.io.IOException;
-import java.io.InputStream;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Encapsulation of a photo.
- * 
- * @author Phillip Webb
+ * @author pwebb
  */
-public interface Photo {
-
-	/**
-	 * @return a new {@link InputStream} containing photo data as a JPEG. The caller is
-	 * responsible for closing the stream.
-	 * @throws IOException
-	 */
-	public InputStream getInputStream() throws IOException;
+@RestController
+public class WebSockets {
 
 }

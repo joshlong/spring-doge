@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package io.spring.demo.doge.photo;
+package io.spring.demo.doge.server.tosort;
 
-import java.io.IOException;
-import java.io.InputStream;
 
-/**
- * Encapsulation of a photo.
- * 
- * @author Phillip Webb
- */
-public interface Photo {
+//@Controller
+class PhotoUploadMvcController {
 
-	/**
-	 * @return a new {@link InputStream} containing photo data as a JPEG. The caller is
-	 * responsible for closing the stream.
-	 * @throws IOException
-	 */
-	public InputStream getInputStream() throws IOException;
+	// private final PhotoService photoService;
+	//
+	// @Autowired
+	// public PhotoUploadMvcController(PhotoService photoService) {
+	// this.photoService = photoService;
+	// }
+	//
+	// @RequestMapping("client")
+	// String client() {
+	// return "client";
+	// }
 
 }

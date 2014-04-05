@@ -14,23 +14,38 @@
  * limitations under the License.
  */
 
-package io.spring.demo.doge.photo;
+package io.spring.demo.doge.server.domain;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.math.BigInteger;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 /**
- * Encapsulation of a photo.
+ * A Doge submitted by a {@link User}.
  * 
  * @author Phillip Webb
  */
-public interface Photo {
+public class Doge {
 
-	/**
-	 * @return a new {@link InputStream} containing photo data as a JPEG. The caller is
-	 * responsible for closing the stream.
-	 * @throws IOException
-	 */
-	public InputStream getInputStream() throws IOException;
+	@Id
+	private BigInteger id;
 
+	@DBRef
+	private User user;
+
+	private String title;
+
+	public Doge(User user, String title) {
+		this.user = user;
+		this.title = title;
+	}
+
+	public User getUser() {
+		return this.user;
+	}
+
+	public String getTitle() {
+		return this.title;
+	}
 }

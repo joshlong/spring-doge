@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-package io.spring.demo.doge.photo;
+package io.spring.demo.doge.server.domain;
 
-import java.io.IOException;
-import java.io.InputStream;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
- * Encapsulation of a photo.
+ * The {@link User} repository.
  * 
  * @author Phillip Webb
  */
-public interface Photo {
-
-	/**
-	 * @return a new {@link InputStream} containing photo data as a JPEG. The caller is
-	 * responsible for closing the stream.
-	 * @throws IOException
-	 */
-	public InputStream getInputStream() throws IOException;
+public interface UserRepository extends MongoRepository<User, String> {
 
 }
