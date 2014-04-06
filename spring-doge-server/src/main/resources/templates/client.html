@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"  >
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>
+        Spring Doge: Such Boot!
+    </title>
+    <meta name="description" content="A simple application demonstrating how to use Spring Boot for evil."/>
+    <meta name="viewport" content="width=device-width"/>
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+</head>
+<body>
+
+<!--[if lt IE 7]>
+<p>
+    You are using an <strong>outdated</strong> browser.
+    Please upgrade your browser to improve your experience.
+</p>
+<![endif]-->
+
+<div ng-controller="DogeController" id="console">
+
+    <h1>Upload an Image
+    </h1>
+
+    Welcome <span th:text="${userId}">phillwebb</span>.
+
+    <form enctype="multipart/form-data" method="post"   th:action="${'/users/'+ userId+'/doge'}">
+
+        <input type="file" name="file"/>
+
+        <input type="submit"/>
+    </form>
+
+    <P>
+
+   <!--     <span th:text="{{imgSource}}">the img URL</span>-->
+
+    </P>
+
+</div>
+
+<script src="lib/requirejs/require.js" data-main="run.js"></script>
+
+</body>
+</html>
