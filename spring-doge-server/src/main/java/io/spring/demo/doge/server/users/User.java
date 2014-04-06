@@ -32,6 +32,10 @@ public class User {
 
 	private String name;
 
+    public String getId() {
+        return id;
+    }
+
     @Override
     public String toString() {
         return "User{" +

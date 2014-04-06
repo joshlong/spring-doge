@@ -68,20 +68,15 @@ public class DogeRestController {
                                                @RequestParam(required = false) String title,
                                                @RequestParam MultipartFile file) throws IOException {
         return () -> {
-            DogePhoto dogePhoto = this.dogeService.addDogePhoto(id, title, MediaType.parseMediaType(file.getContentType()), file);
-
+            DogePhoto dogePhoto = this.dogeService.addDogePhoto(id, title,
+                    MediaType.parseMediaType(file.getContentType()), file::getInputStream);
             UriComponents location = MvcUriComponentsBuilder.fromMethodCall(
                     userControllerProxy.getDoge(id, dogePhoto.getId())).build();
-
             URI uri = location.toUri();
-
             HttpHeaders headers = new HttpHeaders();
             headers.setLocation(uri);
-
             this.simpMessagingTemplate.convertAndSend(
                     "/topic/alarms", Collections.singletonMap("dogePhotoUri", uri));
-
-
             return new ResponseEntity<>(headers, HttpStatus.CREATED);
         };
 

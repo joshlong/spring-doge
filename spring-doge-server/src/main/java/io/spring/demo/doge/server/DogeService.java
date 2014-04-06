@@ -18,7 +18,6 @@ package io.spring.demo.doge.server;
 
 import io.spring.demo.doge.filesystem.File;
 import io.spring.demo.doge.filesystem.mongo.MongoFolder;
-import io.spring.demo.doge.photo.MultipartFilePhoto;
 import io.spring.demo.doge.photo.Photo;
 import io.spring.demo.doge.photo.manipulate.DogePhotoManipulator;
 import io.spring.demo.doge.server.photos.DogePhoto;
@@ -30,7 +29,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,37 +63,23 @@ public class DogeService {
         return this.userRepository.findOne(user);
     }
 
-    public DogePhoto addDogePhoto(String username,
-                                  String title,
-                                  MediaType mediaType,
-                                  MultipartFile contents) {
-        User user = this.userRepository.findOne(username);
+    public DogePhoto addDogePhoto(String id, String title, MediaType mediaType, Photo uploadedPhoto) throws IOException {
+
+        User user = this.userRepository.findOne(id);
         String finalTitle = StringUtils.hasText(title) ? title : "";
         DogePhoto photo = this.dogePhotoRepository.save(new DogePhoto(user, mediaType.toString(), finalTitle));
         BigInteger photoId = photo.getId();
-        File file = folder.getFile(fileNameForFile(photoId));
-        file.createIfMissing();
-        /*try (
-                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(contents);
-                OutputStream fileOutputStream = file.getContent().asOutputStream()) {
-            StreamUtils.copy(byteArrayInputStream, fileOutputStream);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }*/
-
-        Photo uploadedPhoto = new MultipartFilePhoto(contents);
-        try {
+        if (null != uploadedPhoto && uploadedPhoto.getInputStream() != null) {
+            File file = folder.getFile(fileNameForFile(photoId));
+            file.createIfMissing();
             Photo somethingToWrite = dogePhotoManipulator.manipulate(uploadedPhoto);
             try (InputStream manipulatedPhotoBytes = somethingToWrite.getInputStream();
                  OutputStream fileOutputStream = file.getContent().asOutputStream()) {
-
                 StreamUtils.copy(manipulatedPhotoBytes, fileOutputStream);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
-
         return photo;
+
     }
 
     public InputStream readDogePhotoContents(String username, BigInteger bigInteger) {

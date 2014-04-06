@@ -17,6 +17,7 @@
 package io.spring.demo.doge.server.photos;
 
 import java.math.BigInteger;
+import java.util.Collection;
 
 import io.spring.demo.doge.server.users.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -29,7 +30,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  */
 public interface DogePhotoRepository extends MongoRepository<DogePhoto, BigInteger> {
 
-	Iterable<DogePhoto> findByUser(User user);
+	Collection<DogePhoto> findByUser(User user);
 
 	DogePhoto findByIdAndUser(BigInteger id, User user);
 }
