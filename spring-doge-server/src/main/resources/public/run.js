@@ -3,11 +3,11 @@ require.config({
     paths: {
 
         stomp: 'stomp-websocket/lib/stomp',
-        sockjs: 'sockjs/sockjs'
-
-
-        /*  domReady: 'lib/requirejs-domready/domReady',
-         angular: 'lib/angular/angular',
+        sockjs: 'sockjs/sockjs',
+        angular: 'angular/angular',
+        domReady: 'requirejs-domready/domReady'
+        /*
+         ,
          jquery: 'lib/jquery/jquery',
          bootstrap: 'lib/bootstrap/bootstrap',
          ngResource: 'lib/angular-resource/angular-resource',
@@ -17,9 +17,10 @@ require.config({
 
     },
     shim: {
-        /*  angular: {
-         exports: 'angular'
-         },
+        angular: {
+            exports: 'angular'
+        }
+        /*
          bootstrap: {
          deps: ['jquery']
          },
@@ -35,39 +36,20 @@ require.config({
     }
 });
 
+
 define([
-    'require'
-//    'angular',
-    // 'app'
+    'require' ,
+    'angular',
+    '../app'
 ], function (require) {
     'use strict';
 
-    require(['sockjs', 'stomp'], function (sockjs, stomp) {
-        console.log('loaded sockjs and stomp!');
-        var socket = new SockJS('/doge');
-        console.log('created new SockJS pointing to /doge');
-        var client = Stomp.over(socket);
-        console.log('created new Stomp client on top of SockJS');
-
-        client.connect({}, function (frame) {
-            console.log('Connected ' + frame);
-            client.subscribe("/topic/alarms", function (message) {
-                var uri = JSON.parse( message.body).dogePhotoUri ;
-                console.log ( uri  +'');
-                window.alert('A new doge-ified image has been posted! '+ uri );
-            });
-        }, function (error) {
-            console.log("STOMP protocol error " + error);
-        });
-
-
+    require(['sockjs', 'angular', 'stomp' , 'domReady!'], function (sockjs, angular, stomp) {
+        console.log('sockjs, angular and stomp loaded, continuing..');
+        angular.bootstrap(document, ['doge']);
+        console.log('just called angular.bootstrap!')
     });
 
 
-    /* require(['domReady!'], function (document) {
-     angular.bootstrap(document, ['doge']);
-     console.log('just called angular.bootstrap!')
-     });*/
 
 });
-

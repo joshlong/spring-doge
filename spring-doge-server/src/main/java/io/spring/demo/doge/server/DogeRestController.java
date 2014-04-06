@@ -68,7 +68,7 @@ public class DogeRestController {
                                                @RequestParam(required = false) String title,
                                                @RequestParam MultipartFile file) throws IOException {
         return () -> {
-            DogePhoto dogePhoto = this.dogeService.addDogePhoto(id, title, MediaType.parseMediaType(file.getContentType()), file.getBytes());
+            DogePhoto dogePhoto = this.dogeService.addDogePhoto(id, title, MediaType.parseMediaType(file.getContentType()), file);
 
             UriComponents location = MvcUriComponentsBuilder.fromMethodCall(
                     userControllerProxy.getDoge(id, dogePhoto.getId())).build();

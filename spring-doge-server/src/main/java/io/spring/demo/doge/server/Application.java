@@ -18,6 +18,7 @@ package io.spring.demo.doge.server;
 
 import com.mongodb.Mongo;
 import io.spring.demo.doge.filesystem.mongo.MongoFolder;
+import io.spring.demo.doge.photo.manipulate.DogePhotoManipulator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.MultiPartConfigFactory;
@@ -55,6 +56,11 @@ public class Application {
         MultiPartConfigFactory factory = new MultiPartConfigFactory();
         factory.setMaxFileSize("10Mb");
         return factory.createMultipartConfig();
+    }
+
+    @Bean
+    public DogePhotoManipulator dogePhotoManipulator() {
+        return new DogePhotoManipulator();
     }
 
     @Bean
