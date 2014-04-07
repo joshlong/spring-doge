@@ -25,7 +25,8 @@ import org.springframework.util.Assert;
 
 /**
  * {@link Photo} backed by a {@link java.io.File}.
- * 
+ *
+ * @author Josh Long
  * @author Phillip Webb
  */
 public class FilePhoto implements Photo {

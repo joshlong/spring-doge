@@ -7,25 +7,27 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * Handles things related to presenting information tot he client, such as websockets and views
+ * Handles things related to presenting information to he client, such as websockets and
+ * views
  *
  * @author Josh Long
+ * @author Phillip Webb
  */
 @Controller
 public class DogeMvcController {
 
-    private final SimpMessageSendingOperations messagingTemplate;
+	private final SimpMessageSendingOperations messagingTemplate;
 
-    @Autowired
-    public DogeMvcController(SimpMessageSendingOperations messagingTemplate) {
-        this.messagingTemplate = messagingTemplate;
-    }
+	@Autowired
+	public DogeMvcController(SimpMessageSendingOperations messagingTemplate) {
+		this.messagingTemplate = messagingTemplate;
+	}
 
-    @RequestMapping("/client")
-    String client(Model model) { // todo derive this from security principal once integrated
-        model.addAttribute("userId", "joshlong");
-        return "client" ;
-    }
-
+	@RequestMapping("/client")
+	String client(Model model) {
+		// FIXME derive this from security principal once integrated
+		model.addAttribute("userId", "joshlong");
+		return "client";
+	}
 
 }

@@ -30,7 +30,8 @@ import de.flapdoodle.embed.process.runtime.Network;
 
 /**
  * {@link TestExecutionListeners} to start and stop mongo.
- * 
+ *
+ * @author Josh Long
  * @author Phillip Webb
  */
 public class MongoDbTestExecutionListener extends AbstractTestExecutionListener {

@@ -5,16 +5,21 @@ import java.io.InputStream;
 
 /**
  * @author Josh Long
+ * @author Phillip Webb
  */
-public class InputStreamPhoto  implements Photo{
-    @Override
-    public InputStream getInputStream() throws IOException {
-         return this.inputStream;
-    }
+public class InputStreamPhoto implements Photo {
 
-    public InputStreamPhoto(InputStream inputStream) {
-        this.inputStream = inputStream;
-    }
+	// FIXME should delete this as cannot call getInputStream multiple times
 
-    private final InputStream inputStream ;
+	private final InputStream inputStream;
+
+	@Override
+	public InputStream getInputStream() throws IOException {
+		return this.inputStream;
+	}
+
+	public InputStreamPhoto(InputStream inputStream) {
+		this.inputStream = inputStream;
+	}
+
 }

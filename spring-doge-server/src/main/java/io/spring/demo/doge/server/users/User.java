@@ -19,10 +19,11 @@ package io.spring.demo.doge.server.users;
 import org.springframework.data.annotation.Id;
 
 /**
- * A single user of the system. Each {@link User} may submit one or more {@link io.spring.demo.doge.server.photos.DogePhoto}s.
- * 
- * @author Phillip Webb
+ * A single user of the system. Each {@link User} may submit one or more
+ * {@link io.spring.demo.doge.server.photos.DogePhoto}s.
+ *
  * @author Josh Long
+ * @author Phillip Webb
  * @see io.spring.demo.doge.server.photos.DogePhoto
  */
 public class User {
@@ -32,19 +33,16 @@ public class User {
 
 	private String name;
 
-    public String getId() {
-        return id;
-    }
+	public String getId() {
+		return this.id;
+	}
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "User{" + "id='" + this.id + '\'' + ", name='" + this.name + '\'' + '}';
+	}
 
-    public User(String id, String name) {
+	public User(String id, String name) {
 		this.id = id;
 		this.name = name;
 	}

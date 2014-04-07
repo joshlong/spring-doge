@@ -18,32 +18,35 @@ package io.spring.demo.doge.server;
 
 import io.spring.demo.doge.server.users.User;
 import io.spring.demo.doge.server.users.UserRepository;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-
 /**
  * Insert some sample data to use.
  *
+ * @author Josh Long
  * @author Phillip Webb
  */
 @Component
 public class ApplicationDataInitializer implements InitializingBean {
 
-    private final UserRepository userRepository;
+	private final UserRepository userRepository;
 
-    @Autowired
-    public ApplicationDataInitializer(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+	@Autowired
+	public ApplicationDataInitializer(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        Arrays.asList(new User("joshlong", "Josh Long"), new User("philwebb", "Phil Webb"))
-                .forEach(user -> {
-            System.out.println(userRepository.save(user));
-        });
-    }
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		save(new User("joshlong", "Josh Long"));
+		save(new User("philwebb", "Phil Webb"));
+	}
+
+	private void save(User user) {
+		this.userRepository.save(user);
+	}
+
 }

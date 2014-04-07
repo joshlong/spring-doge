@@ -24,7 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * {@link Photo} backed by a {@link MultipartFile}.
- * 
+ *
+ * @author Josh Long
  * @author Phillip Webb
  */
 public class MultipartFilePhoto implements Photo {

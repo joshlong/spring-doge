@@ -21,7 +21,8 @@ import java.io.InputStream;
 
 /**
  * Encapsulation of a photo.
- * 
+ *
+ * @author Josh Long
  * @author Phillip Webb
  */
 public interface Photo {

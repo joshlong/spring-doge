@@ -16,21 +16,23 @@
 
 package io.spring.demo.doge.server.photos;
 
+import io.spring.demo.doge.server.users.User;
+
 import java.math.BigInteger;
 import java.util.Collection;
 
-import io.spring.demo.doge.server.users.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
  * The {@link DogePhoto} repository.
- * 
- * @author Phillip Webb
+ *
  * @author Josh Long
+ * @author Phillip Webb
  */
 public interface DogePhotoRepository extends MongoRepository<DogePhoto, BigInteger> {
 
 	Collection<DogePhoto> findByUser(User user);
 
 	DogePhoto findByIdAndUser(BigInteger id, User user);
+
 }

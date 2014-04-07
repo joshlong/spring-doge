@@ -20,14 +20,13 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
  * The {@link User} repository.
- * 
- * @author Phillip Webb
+ *
  * @author Josh Long
+ * @author Phillip Webb
  */
 public interface UserRepository extends MongoRepository<User, String> {
 
-    // will be useful in tying in Spring Security
-    User findByName (String username) ;
-
+	// will be useful in tying in Spring Security
+	User findByName(String username);
 
 }

@@ -28,7 +28,8 @@ import org.springframework.util.Assert;
 
 /**
  * {@link Photo} backed by a {@link BufferedImage}.
- * 
+ *
+ * @author Josh Long
  * @author Phillip Webb
  */
 public class BufferedImagePhoto implements Photo {

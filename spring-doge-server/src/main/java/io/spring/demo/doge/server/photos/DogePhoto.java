@@ -17,49 +17,51 @@
 package io.spring.demo.doge.server.photos;
 
 import io.spring.demo.doge.server.users.User;
+
+import java.math.BigInteger;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 
-import java.math.BigInteger;
-
 /**
  * A DogePhoto submitted by a {@link io.spring.demo.doge.server.users.User}.
  *
- * @author Phillip Webb
  * @author Josh Long
+ * @author Phillip Webb
  */
 public class DogePhoto {
 
-    @Id
-    private BigInteger id;
-    @DBRef
-    private User user;
-    private String title;
-    private String mediaType;
+	@Id
+	private BigInteger id;
+	@DBRef
+	private User user;
+	private String title;
+	private String mediaType;
 
-    public DogePhoto(User user, String mediaType, String title) {
-        Assert.notNull(user);
-        Assert.hasText(mediaType);
-        this.user = user;
-        this.mediaType = MediaType.parseMediaType(mediaType).toString();
-        this.title = title;
-    }
+	public DogePhoto(User user, String mediaType, String title) {
+		Assert.notNull(user);
+		Assert.hasText(mediaType);
+		this.user = user;
+		this.mediaType = MediaType.parseMediaType(mediaType).toString();
+		this.title = title;
+	}
 
-    public String getMediaType() {
-        return mediaType;
-    }
+	public String getMediaType() {
+		return this.mediaType;
+	}
 
-    public User getUser() {
-        return this.user;
-    }
+	public User getUser() {
+		return this.user;
+	}
 
-    public String getTitle() {
-        return this.title;
-    }
+	public String getTitle() {
+		return this.title;
+	}
 
-    public BigInteger getId() {
-        return this.id;
-    }
+	public BigInteger getId() {
+		return this.id;
+	}
+
 }
