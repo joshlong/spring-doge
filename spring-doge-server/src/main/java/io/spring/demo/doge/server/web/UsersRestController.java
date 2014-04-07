@@ -19,10 +19,9 @@ package io.spring.demo.doge.server.web;
 import io.spring.demo.doge.photo.MultipartFilePhoto;
 import io.spring.demo.doge.photo.Photo;
 import io.spring.demo.doge.photo.PhotoResource;
-import io.spring.demo.doge.server.domain.Doge;
+import io.spring.demo.doge.server.domain.DogePhoto;
 import io.spring.demo.doge.server.domain.User;
-import io.spring.demo.doge.server.domain.UserRepository;
-import io.spring.demo.doge.server.service.DogePhotoService;
+import io.spring.demo.doge.server.service.DogeService;
 
 import java.io.IOException;
 import java.net.URI;
@@ -53,33 +52,29 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/users")
 public class UsersRestController {
 
-	private final UserRepository userRepository;
-
-	private final DogePhotoService dogePhotoService;
+	private final DogeService dogePhotoService;
 
 	private final SimpMessagingTemplate messaging;
 
 	@Autowired
-	public UsersRestController(UserRepository userRepository,
-			DogePhotoService dogePhotoService, SimpMessagingTemplate messaging) {
-		this.userRepository = userRepository;
+	public UsersRestController(DogeService dogePhotoService,
+			SimpMessagingTemplate messaging) {
 		this.dogePhotoService = dogePhotoService;
 		this.messaging = messaging;
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "{userId}")
 	public User getUser(@PathVariable String userId) {
-		return this.userRepository.findOne(userId);
+		return this.dogePhotoService.findOne(userId);
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "{userId}/doge")
 	public ResponseEntity<?> postDogePhoto(@PathVariable String userId,
 			@RequestParam MultipartFile file, UriComponentsBuilder uriBuilder)
 			throws IOException {
-		User user = this.userRepository.findOne(userId);
-		Doge doge = this.dogePhotoService
-				.addDogePhoto(user, new MultipartFilePhoto(file));
 
+		DogePhoto doge = this.dogePhotoService.addDogePhoto(userId,
+				new MultipartFilePhoto(file));
 		URI uri = uriBuilder.path("/users/{userId}/doge/{dogeId}")
 				.buildAndExpand(userId, doge.getId()).toUri();
 
@@ -94,8 +89,7 @@ public class UsersRestController {
 	@RequestMapping(method = RequestMethod.GET, value = "{userId}/doge/{dogeId}")
 	public ResponseEntity<Resource> getDogePhoto(@PathVariable String userId,
 			@PathVariable String dogeId) throws IOException {
-		User user = this.userRepository.findOne(userId);
-		Photo photo = this.dogePhotoService.getDogePhoto(user, dogeId);
+		Photo photo = this.dogePhotoService.getDogePhoto(userId, dogeId);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.IMAGE_JPEG);
 		return new ResponseEntity<Resource>(new PhotoResource(photo), headers,

@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
  * @author Josh Long
  * @author Phillip Webb
  */
-public class Doge {
+public class DogePhoto {
 
 	@Id
 	private String id;
@@ -36,7 +36,7 @@ public class Doge {
 
 	private String fileRef;
 
-	public Doge(User user, String fileRef) {
+	public DogePhoto(User user, String fileRef) {
 		Assert.notNull(user, "User must not be null");
 		Assert.notNull(fileRef, "FileRef must not be null");
 		this.user = user;

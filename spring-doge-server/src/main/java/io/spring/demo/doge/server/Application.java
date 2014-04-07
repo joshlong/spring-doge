@@ -27,10 +27,21 @@ import org.springframework.boot.context.embedded.MultiPartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.ChannelRegistration;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
 import com.mongodb.Mongo;
 
 /**
+ * Application configuration and main method.
+ *
  * @author Josh Long
  * @author Phillip Webb
  */
@@ -39,9 +50,6 @@ import com.mongodb.Mongo;
 @EnableAutoConfiguration
 public class Application {
 
-	/**
-	 * Configure multi-part file uploads.
-	 */
 	@Bean
 	public MultipartConfigElement multipartConfigElement() {
 		MultiPartConfigFactory factory = new MultiPartConfigFactory();
@@ -57,6 +65,40 @@ public class Application {
 	@Bean
 	public MongoFolder photoFolder(Mongo mongo) {
 		return new MongoFolder(mongo.getDB("photos"));
+	}
+
+	@Configuration
+	@EnableScheduling
+	@EnableWebSocketMessageBroker
+	static class WebSocketConfiguration extends AbstractWebSocketMessageBrokerConfigurer
+			implements SchedulingConfigurer {
+
+		@Bean
+		public ThreadPoolTaskScheduler reservationPool() {
+			return new ThreadPoolTaskScheduler();
+		}
+
+		@Override
+		public void registerStompEndpoints(StompEndpointRegistry registry) {
+			registry.addEndpoint("/doge").withSockJS();
+		}
+
+		@Override
+		public void configureClientOutboundChannel(ChannelRegistration registration) {
+			registration.taskExecutor().corePoolSize(4).maxPoolSize(10);
+		}
+
+		@Override
+		public void configureMessageBroker(MessageBrokerRegistry registry) {
+			registry.enableSimpleBroker("/queue/", "/topic/");
+			registry.setApplicationDestinationPrefixes("/app");
+		}
+
+		@Override
+		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+			taskRegistrar.setTaskScheduler(reservationPool());
+		}
+
 	}
 
 	public static void main(String[] args) {

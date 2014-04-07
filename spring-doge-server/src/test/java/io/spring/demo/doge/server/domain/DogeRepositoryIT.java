@@ -30,7 +30,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link DogeRepository}.
+ * Tests for {@link DogePhotoRepository}.
  *
  * @author Phillip Webb
  */
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertThat;
 public class DogeRepositoryIT {
 
 	@Autowired
-	private DogeRepository dogeRepository;
+	private DogePhotoRepository dogeRepository;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -47,10 +47,10 @@ public class DogeRepositoryIT {
 	@Test
 	public void addDoge() throws Exception {
 		User user = new User("joshlong", "Josh Long");
-		Doge doge = new Doge(user, "test");
+		DogePhoto doge = new DogePhoto(user, "test");
 		user = this.userRepository.save(user);
 		doge = this.dogeRepository.save(doge);
-		Doge found = this.dogeRepository.findOne(doge.getId());
+		DogePhoto found = this.dogeRepository.findOne(doge.getId());
 		assertThat(found.getId(), not(nullValue()));
 		assertThat(found.getFileRef(), equalTo("test"));
 	}
@@ -58,10 +58,10 @@ public class DogeRepositoryIT {
 	@Test
 	public void findDoge() throws Exception {
 		User user = new User("joshlong", "Josh Long");
-		Doge doge = new Doge(user, "test");
+		DogePhoto doge = new DogePhoto(user, "test");
 		user = this.userRepository.save(user);
 		doge = this.dogeRepository.save(doge);
-		Doge found = this.dogeRepository.findOneByIdAndUser(doge.getId(), user);
+		DogePhoto found = this.dogeRepository.findOneByIdAndUser(doge.getId(), user);
 		assertThat(found.getFileRef(), equalTo("test"));
 	}
 

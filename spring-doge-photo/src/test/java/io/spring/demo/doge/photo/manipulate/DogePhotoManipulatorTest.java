@@ -20,30 +20,30 @@ import java.io.OutputStream;
  */
 public class DogePhotoManipulatorTest {
 
-    private PhotoManipulator manipulator = new DogePhotoManipulator();
+	private PhotoManipulator manipulator = new DogePhotoManipulator();
 
-    private File file;
+	private File file;
 
-    @Before
-    public void clean() {
-        File target = new File(System.getProperty("java.io.tmpdir"));
-        this.file = new File(target, "manipulatedhoff.jpg");
-        if (this.file.exists()) {
-            this.file.delete();
-            System.out.println(String.format(
-                 "deleting existing hoff @ %s", this.file.getAbsolutePath()));
-        }
-    }
+	@Before
+	public void clean() {
+		File target = new File(System.getProperty("java.io.tmpdir"));
+		this.file = new File(target, "manipulatedhoff.jpg");
+		if (this.file.exists()) {
+			this.file.delete();
+			System.out.println(String.format("deleting existing hoff @ %s",
+					this.file.getAbsolutePath()));
+		}
+	}
 
-    @Test
-    public void testDogePhotoManipulatorService() throws Exception {
-        Photo photo = new ResourcePhoto(new ClassPathResource("thehoff.jpg"));
-        Photo manipulatedPhoto = manipulator.manipulate(photo);
-        System.out.println("writing out file to " + file.getAbsolutePath());
-        try (InputStream inputStream = manipulatedPhoto.getInputStream();
-             OutputStream outputStream = new FileOutputStream(file)) {
-            FileCopyUtils.copy(inputStream, outputStream);
-        }
-    }
+	@Test
+	public void testDogePhotoManipulatorService() throws Exception {
+		Photo photo = new ResourcePhoto(new ClassPathResource("thehoff.jpg"));
+		Photo manipulatedPhoto = manipulator.manipulate(photo);
+		System.out.println("writing out file to " + file.getAbsolutePath());
+		try (InputStream inputStream = manipulatedPhoto.getInputStream();
+				OutputStream outputStream = new FileOutputStream(file)) {
+			FileCopyUtils.copy(inputStream, outputStream);
+		}
+	}
 
 }

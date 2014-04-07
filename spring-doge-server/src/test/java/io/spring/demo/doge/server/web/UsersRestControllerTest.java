@@ -18,7 +18,7 @@ package io.spring.demo.doge.server.web;
 
 import io.spring.demo.doge.server.domain.User;
 import io.spring.demo.doge.server.domain.UserRepository;
-import io.spring.demo.doge.server.service.DogePhotoService;
+import io.spring.demo.doge.server.service.DogeService;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -62,7 +62,7 @@ public class UsersRestControllerTest {
 	private UserRepository userRepository;
 
 	@Autowired
-	private DogePhotoService dogePhotoService;
+	private DogeService dogePhotoService;
 
 	private MockMvc mvc;
 
@@ -95,8 +95,8 @@ class TestConfiguration {
 	}
 
 	@Bean
-	public DogePhotoService dogePhotoService() {
-		return mock(DogePhotoService.class);
+	public DogeService dogePhotoService() {
+		return mock(DogeService.class);
 	}
 
 }

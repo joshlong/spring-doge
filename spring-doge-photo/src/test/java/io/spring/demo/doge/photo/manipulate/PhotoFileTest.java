@@ -23,41 +23,41 @@ import static org.junit.Assert.assertThat;
  */
 public class PhotoFileTest {
 
-    private File tmpDirectory = new File(System.getProperty("java.io.tmpdir"));
+	private File tmpDirectory = new File(System.getProperty("java.io.tmpdir"));
 
-    @Rule
-    public ExpectedException thown = ExpectedException.none();
+	@Rule
+	public ExpectedException thown = ExpectedException.none();
 
-    @Test
-    public void shouldNotBeNull() throws Exception {
-        this.thown.expect(IllegalArgumentException.class);
-        this.thown.expectMessage("File must not be null");
-        new FilePhoto(null);
-    }
+	@Test
+	public void shouldNotBeNull() throws Exception {
+		this.thown.expect(IllegalArgumentException.class);
+		this.thown.expectMessage("File must not be null");
+		new FilePhoto(null);
+	}
 
-    @Test
-    public void shouldNotBeMissing() throws Exception {
-        File file = new File("missing");
-        this.thown.expect(IllegalArgumentException.class);
-        this.thown.expectMessage("does not exist");
-        new FilePhoto(file);
-    }
+	@Test
+	public void shouldNotBeMissing() throws Exception {
+		File file = new File("missing");
+		this.thown.expect(IllegalArgumentException.class);
+		this.thown.expectMessage("does not exist");
+		new FilePhoto(file);
+	}
 
-    @Test
-    public void shouldNotBeFolder() throws Exception {
-        File file = tmpDirectory.getAbsoluteFile();
-        this.thown.expect(IllegalArgumentException.class);
-        this.thown.expectMessage("is not a file");
-        new FilePhoto(file);
-    }
+	@Test
+	public void shouldNotBeFolder() throws Exception {
+		File file = tmpDirectory.getAbsoluteFile();
+		this.thown.expect(IllegalArgumentException.class);
+		this.thown.expectMessage("is not a file");
+		new FilePhoto(file);
+	}
 
-    @Test
-    public void shouldGetInputStream() throws Exception {
-        Resource file = new ClassPathResource("thehoff.jpg");
-        Photo photo = new ResourcePhoto(file);
-        byte[] originalResource = StreamUtils.copyToByteArray(file.getInputStream());
-        byte[] photoResource = StreamUtils.copyToByteArray(photo.getInputStream());
-        assertThat(originalResource, equalTo(photoResource));
-    }
+	@Test
+	public void shouldGetInputStream() throws Exception {
+		Resource file = new ClassPathResource("thehoff.jpg");
+		Photo photo = new ResourcePhoto(file);
+		byte[] originalResource = StreamUtils.copyToByteArray(file.getInputStream());
+		byte[] photoResource = StreamUtils.copyToByteArray(photo.getInputStream());
+		assertThat(originalResource, equalTo(photoResource));
+	}
 
 }

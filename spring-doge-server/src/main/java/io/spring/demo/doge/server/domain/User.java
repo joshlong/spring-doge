@@ -20,11 +20,11 @@ import org.springframework.data.annotation.Id;
 
 /**
  * A single user of the system. Each {@link User} may submit one or more
- * {@link io.spring.demo.doge.server.domain.Doge}s.
+ * {@link io.spring.demo.doge.server.domain.DogePhoto}s.
  *
  * @author Josh Long
  * @author Phillip Webb
- * @see io.spring.demo.doge.server.domain.Doge
+ * @see io.spring.demo.doge.server.domain.DogePhoto
  */
 public class User {
 

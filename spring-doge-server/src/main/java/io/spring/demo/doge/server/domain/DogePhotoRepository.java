@@ -19,13 +19,13 @@ package io.spring.demo.doge.server.domain;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
- * The {@link Doge} repository.
+ * The {@link DogePhoto} repository.
  *
  * @author Josh Long
  * @author Phillip Webb
  */
-public interface DogeRepository extends MongoRepository<Doge, String> {
+public interface DogePhotoRepository extends MongoRepository<DogePhoto, String> {
 
-	Doge findOneByIdAndUser(String id, User user);
+	DogePhoto findOneByIdAndUser(String id, User user);
 
 }

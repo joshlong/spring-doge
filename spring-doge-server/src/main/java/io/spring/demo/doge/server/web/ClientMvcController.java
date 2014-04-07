@@ -5,19 +5,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * Handles things related to presenting information to he client, such as websockets and
- * views
+ * MVC Controller for the client UI
  *
  * @author Josh Long
  * @author Phillip Webb
  */
 @Controller
-public class DogeMvcController {
+public class ClientMvcController {
 
 	@RequestMapping("/client")
 	String client(Model model) {
-		// FIXME derive this from security principal once integrated
-		model.addAttribute("userId", "joshlong");
+		// FIXME try to remove this, replace with configurrurrruruer
 		return "client";
 	}
 
