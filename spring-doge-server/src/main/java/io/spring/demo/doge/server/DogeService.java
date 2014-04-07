@@ -67,7 +67,8 @@ public class DogeService {
 
         User user = this.userRepository.findOne(id);
         String finalTitle = StringUtils.hasText(title) ? title : "";
-        DogePhoto photo = this.dogePhotoRepository.save(new DogePhoto(user, mediaType.toString(), finalTitle));
+        DogePhoto photo = this.dogePhotoRepository.save(
+                new DogePhoto(user, mediaType.toString(), finalTitle));
         BigInteger photoId = photo.getId();
         if (null != uploadedPhoto && uploadedPhoto.getInputStream() != null) {
             File file = folder.getFile(fileNameForFile(photoId));

@@ -1,11 +1,18 @@
+var doge = {
+    jsUrl: function (p) {
+        return 'lib/' + p;
+    }
+
+};
+
 require.config({
-    baseUrl: 'lib',
+    //baseUrl: 'lib',
     paths: {
 
-        stomp: 'stomp-websocket/lib/stomp',
-        sockjs: 'sockjs/sockjs',
-        angular: 'angular/angular',
-        domReady: 'requirejs-domready/domReady'
+        stomp: doge.jsUrl('stomp-websocket/lib/stomp'),
+        sockjs:doge.jsUrl( 'sockjs/sockjs'),
+        angular: doge.jsUrl('angular/angular'),
+        domReady: doge.jsUrl('requirejs-domready/domReady')
         /*
          ,
          jquery: 'lib/jquery/jquery',
@@ -40,7 +47,7 @@ require.config({
 define([
     'require' ,
     'angular',
-    '../app'
+    'app'
 ], function (require) {
     'use strict';
 
@@ -49,7 +56,6 @@ define([
         angular.bootstrap(document, ['doge']);
         console.log('just called angular.bootstrap!')
     });
-
 
 
 });

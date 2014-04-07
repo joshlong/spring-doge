@@ -64,14 +64,14 @@ public class DogeRestController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "{id}/doge")
-    public Callable<ResponseEntity<?>> putDoge(@PathVariable String id,
-                                               @RequestParam(required = false) String title,
-                                               @RequestParam MultipartFile file) throws IOException {
+    public Callable<ResponseEntity<?>> putDogePhoto(@PathVariable String id,
+                                                    @RequestParam(required = false) String title,
+                                                    @RequestParam MultipartFile file) throws IOException {
         return () -> {
             DogePhoto dogePhoto = this.dogeService.addDogePhoto(id, title,
                     MediaType.parseMediaType(file.getContentType()), file::getInputStream);
             UriComponents location = MvcUriComponentsBuilder.fromMethodCall(
-                    userControllerProxy.getDoge(id, dogePhoto.getId())).build();
+                    userControllerProxy.getDogePhoto(id, dogePhoto.getId())).build();
             URI uri = location.toUri();
             HttpHeaders headers = new HttpHeaders();
             headers.setLocation(uri);
@@ -83,8 +83,8 @@ public class DogeRestController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "{id}/doge/{dogeId}")
-    public ResponseEntity<byte[]> getDoge(@PathVariable String id,
-                                          @PathVariable BigInteger dogeId) throws IOException {
+    public ResponseEntity<byte[]> getDogePhoto(@PathVariable String id,
+                                               @PathVariable BigInteger dogeId) throws IOException {
         User user = this.dogeService.getUserById(id);
         DogePhoto dogePhoto = this.dogeService.getDogePhotoById(dogeId);
         try (InputStream dogePhotoInputStream = this.dogeService.readDogePhotoContents(id, dogePhoto.getId())) {
