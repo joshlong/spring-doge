@@ -1,7 +1,5 @@
-package io.spring.demo.doge.server;
+package io.spring.demo.doge.server.web;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,13 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 public class DogeMvcController {
-
-	private final SimpMessageSendingOperations messagingTemplate;
-
-	@Autowired
-	public DogeMvcController(SimpMessageSendingOperations messagingTemplate) {
-		this.messagingTemplate = messagingTemplate;
-	}
 
 	@RequestMapping("/client")
 	String client(Model model) {

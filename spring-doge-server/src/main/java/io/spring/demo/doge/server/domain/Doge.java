@@ -14,19 +14,45 @@
  * limitations under the License.
  */
 
-package io.spring.demo.doge.server.users;
+package io.spring.demo.doge.server.domain;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.util.Assert;
 
 /**
- * The {@link User} repository.
+ * A Doge submitted by a {@link User}.
  *
  * @author Josh Long
  * @author Phillip Webb
  */
-public interface UserRepository extends MongoRepository<User, String> {
+public class Doge {
 
-	// will be useful in tying in Spring Security
-	User findByName(String username);
+	@Id
+	private String id;
+
+	@DBRef(lazy = true)
+	private User user;
+
+	private String fileRef;
+
+	public Doge(User user, String fileRef) {
+		Assert.notNull(user, "User must not be null");
+		Assert.notNull(fileRef, "FileRef must not be null");
+		this.user = user;
+		this.fileRef = fileRef;
+	}
+
+	public String getId() {
+		return this.id;
+	}
+
+	public String getFileRef() {
+		return this.fileRef;
+	}
+
+	User getUser() {
+		return this.user;
+	}
 
 }

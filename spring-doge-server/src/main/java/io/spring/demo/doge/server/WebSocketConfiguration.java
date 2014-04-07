@@ -32,11 +32,11 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
  * @author Josh Long
  * @author Phillip Webb
  */
+@Configuration
 @EnableScheduling
 @EnableWebSocketMessageBroker
-@Configuration
 class WebSocketConfiguration extends AbstractWebSocketMessageBrokerConfigurer implements
-		SchedulingConfigurer {
+SchedulingConfigurer {
 
 	@Bean
 	public ThreadPoolTaskScheduler reservationPool() {
@@ -46,10 +46,6 @@ class WebSocketConfiguration extends AbstractWebSocketMessageBrokerConfigurer im
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/doge").withSockJS();
-	}
-
-	@Override
-	public void configureClientInboundChannel(ChannelRegistration registration) {
 	}
 
 	@Override

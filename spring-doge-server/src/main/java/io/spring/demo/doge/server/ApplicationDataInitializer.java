@@ -16,8 +16,8 @@
 
 package io.spring.demo.doge.server;
 
-import io.spring.demo.doge.server.users.User;
-import io.spring.demo.doge.server.users.UserRepository;
+import io.spring.demo.doge.server.domain.User;
+import io.spring.demo.doge.server.domain.UserRepository;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

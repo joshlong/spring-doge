@@ -14,41 +14,15 @@
  * limitations under the License.
  */
 
-package io.spring.demo.doge.server.users;
+package io.spring.demo.doge.server.domain;
 
-import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
- * A single user of the system. Each {@link User} may submit one or more
- * {@link io.spring.demo.doge.server.photos.DogePhoto}s.
+ * The {@link User} repository.
  *
  * @author Josh Long
  * @author Phillip Webb
- * @see io.spring.demo.doge.server.photos.DogePhoto
  */
-public class User {
-
-	@Id
-	private String id;
-
-	private String name;
-
-	public String getId() {
-		return this.id;
-	}
-
-	@Override
-	public String toString() {
-		return "User{" + "id='" + this.id + '\'' + ", name='" + this.name + '\'' + '}';
-	}
-
-	public User(String id, String name) {
-		this.id = id;
-		this.name = name;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
+public interface UserRepository extends MongoRepository<User, String> {
 }

@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package io.spring.demo.doge.server.photos;
-
-import io.spring.demo.doge.server.users.User;
-
-import java.math.BigInteger;
-import java.util.Collection;
+package io.spring.demo.doge.server.domain;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
- * The {@link DogePhoto} repository.
+ * The {@link Doge} repository.
  *
  * @author Josh Long
  * @author Phillip Webb
  */
-public interface DogePhotoRepository extends MongoRepository<DogePhoto, BigInteger> {
+public interface DogeRepository extends MongoRepository<Doge, String> {
 
-	Collection<DogePhoto> findByUser(User user);
-
-	DogePhoto findByIdAndUser(BigInteger id, User user);
+	Doge findOneByIdAndUser(String id, User user);
 
 }

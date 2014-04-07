@@ -15,12 +15,13 @@ public class ResourcePhoto implements Photo {
 
 	private final Resource resource;
 
+	public ResourcePhoto(Resource resource) {
+		this.resource = resource;
+	}
+
 	@Override
 	public InputStream getInputStream() throws IOException {
 		return this.resource.getInputStream();
 	}
 
-	public ResourcePhoto(Resource resource) {
-		this.resource = resource;
-	}
 }
