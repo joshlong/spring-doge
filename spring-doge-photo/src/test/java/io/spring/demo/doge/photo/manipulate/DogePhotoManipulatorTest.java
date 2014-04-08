@@ -27,6 +27,7 @@ public class DogePhotoManipulatorTest {
 		File target = new File(System.getProperty("java.io.tmpdir"));
 		this.file = new File(target, "manipulatedhoff.jpg");
 		this.file.delete();
+		System.out.println(this.file);
 	}
 
 	@Test
