@@ -72,7 +72,7 @@ public class UsersRestController {
 			@RequestParam MultipartFile file, UriComponentsBuilder uriBuilder)
 			throws IOException {
 
-		Photo photo = () -> file.getInputStream();
+		Photo photo = file::getInputStream;
 		DogePhoto doge = this.dogePhotoService.addDogePhoto(userId, photo);
 		URI uri = uriBuilder.path("/users/{userId}/doge/{dogeId}")
 				.buildAndExpand(userId, doge.getId()).toUri();
