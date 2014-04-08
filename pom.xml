@@ -15,7 +15,6 @@
 		<java.version>1.8</java.version>
 	</properties>
 	<modules>
-		<module>spring-doge-filesystem</module>
 		<module>spring-doge-photo</module>
 		<module>spring-doge-server</module>
 		<module>spring-doge-client</module>
