@@ -24,7 +24,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 /**
- * Adapter class to convert a {@link Photo} to a {@link Resource}
+ * Adapter class to convert a {@link Photo} to a Spring {@link Resource}.
+ *
  * @author Josh Long
  * @author Phillip Webb
  */
@@ -45,6 +46,11 @@ public class PhotoResource extends AbstractResource {
 	@Override
 	public InputStream getInputStream() throws IOException {
 		return this.photo.getInputStream();
+	}
+
+	@Override
+	public long contentLength() throws IOException {
+		return -1;
 	}
 
 }

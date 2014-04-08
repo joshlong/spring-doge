@@ -16,7 +16,6 @@
 
 package io.spring.demo.doge.server;
 
-import io.spring.demo.doge.filesystem.mongo.MongoFolder;
 import io.spring.demo.doge.photo.manipulate.DogePhotoManipulator;
 
 import javax.servlet.MultipartConfigElement;
@@ -27,6 +26,9 @@ import org.springframework.boot.context.embedded.MultiPartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -63,8 +65,9 @@ public class Application {
 	}
 
 	@Bean
-	public MongoFolder photoFolder(Mongo mongo) {
-		return new MongoFolder(mongo.getDB("photos"));
+	public GridFsTemplate gridFsTemplate(Mongo mongo, MongoTemplate mongoTemplate) {
+		return new GridFsTemplate(new SimpleMongoDbFactory(mongo, "fs"),
+				mongoTemplate.getConverter());
 	}
 
 	@Configuration

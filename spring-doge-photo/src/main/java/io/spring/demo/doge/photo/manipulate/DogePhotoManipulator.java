@@ -16,12 +16,13 @@
 
 package io.spring.demo.doge.photo.manipulate;
 
-import io.spring.demo.doge.photo.BufferedImagePhoto;
 import io.spring.demo.doge.photo.Photo;
 
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -63,7 +64,11 @@ public class DogePhotoManipulator implements PhotoManipulator {
 	public Photo manipulate(Photo photo) throws IOException {
 		BufferedImage sourceImage = readImage(photo);
 		BufferedImage destinationImage = manipulate(sourceImage);
-		return new BufferedImagePhoto(destinationImage);
+		return () -> {
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			ImageIO.write(destinationImage, "jpeg", outputStream);
+			return new ByteArrayInputStream(outputStream.toByteArray());
+		};
 	}
 
 	private BufferedImage readImage(Photo photo) throws IOException {

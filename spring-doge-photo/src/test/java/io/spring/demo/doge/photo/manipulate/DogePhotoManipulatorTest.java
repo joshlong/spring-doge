@@ -1,16 +1,14 @@
 package io.spring.demo.doge.photo.manipulate;
 
 import io.spring.demo.doge.photo.Photo;
-import io.spring.demo.doge.photo.ResourcePhoto;
+
+import java.io.File;
+import java.io.FileOutputStream;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileCopyUtils;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * Tests for {@link DogePhotoManipulator}.
@@ -28,22 +26,13 @@ public class DogePhotoManipulatorTest {
 	public void clean() {
 		File target = new File(System.getProperty("java.io.tmpdir"));
 		this.file = new File(target, "manipulatedhoff.jpg");
-		if (this.file.exists()) {
-			this.file.delete();
-			System.out.println(String.format("deleting existing hoff @ %s",
-					this.file.getAbsolutePath()));
-		}
+		this.file.delete();
 	}
 
 	@Test
 	public void testDogePhotoManipulatorService() throws Exception {
-		Photo photo = new ResourcePhoto(new ClassPathResource("thehoff.jpg"));
-		Photo manipulatedPhoto = manipulator.manipulate(photo);
-		System.out.println("writing out file to " + file.getAbsolutePath());
-		try (InputStream inputStream = manipulatedPhoto.getInputStream();
-				OutputStream outputStream = new FileOutputStream(file)) {
-			FileCopyUtils.copy(inputStream, outputStream);
-		}
+		Photo photo = () -> new ClassPathResource("thehoff.jpg").getInputStream();
+		Photo manipulated = this.manipulator.manipulate(photo);
+		FileCopyUtils.copy(manipulated.getInputStream(), new FileOutputStream(this.file));
 	}
-
 }

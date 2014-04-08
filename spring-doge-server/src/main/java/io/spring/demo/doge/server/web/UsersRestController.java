@@ -16,7 +16,6 @@
 
 package io.spring.demo.doge.server.web;
 
-import io.spring.demo.doge.photo.MultipartFilePhoto;
 import io.spring.demo.doge.photo.Photo;
 import io.spring.demo.doge.photo.PhotoResource;
 import io.spring.demo.doge.server.domain.DogePhoto;
@@ -73,8 +72,8 @@ public class UsersRestController {
 			@RequestParam MultipartFile file, UriComponentsBuilder uriBuilder)
 			throws IOException {
 
-		DogePhoto doge = this.dogePhotoService.addDogePhoto(userId,
-				new MultipartFilePhoto(file));
+		Photo photo = () -> file.getInputStream();
+		DogePhoto doge = this.dogePhotoService.addDogePhoto(userId, photo);
 		URI uri = uriBuilder.path("/users/{userId}/doge/{dogeId}")
 				.buildAndExpand(userId, doge.getId()).toUri();
 

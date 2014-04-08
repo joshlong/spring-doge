@@ -14,8 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ClientMvcController {
 
 	@RequestMapping("/client")
-	String client(Model model) {
-		// FIXME try to remove this, replace with configurrurrruruer
+	public String client(Model model) {
+		// FIXME derive this from security principal once integrated
+		model.addAttribute("userId", "joshlong");
 		return "client";
 	}
 

@@ -33,11 +33,6 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-doge-filesystem</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>spring-doge-photo</artifactId>
 			<version>${project.version}</version>
 		</dependency>
