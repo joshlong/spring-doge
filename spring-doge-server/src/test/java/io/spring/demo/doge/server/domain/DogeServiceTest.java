@@ -59,9 +59,9 @@ public class DogeServiceTest {
 
     @Before
     public void before() {
-        Arrays.asList(
-                josh = new User("joshlong", "Josh Long"),
-                phil = new User("philwebb", "Phil Webb")).forEach(userRepository::save);
+
+        this.josh = this.userRepository.findOne("joshlong") ;
+        this.phil = this.userRepository.findOne("philwebb") ;
     }
 
     @Test

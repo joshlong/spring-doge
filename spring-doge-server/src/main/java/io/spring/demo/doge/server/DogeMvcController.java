@@ -14,13 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class DogeMvcController {
 
-    private final SimpMessageSendingOperations messagingTemplate;
-
-    @Autowired
-    public DogeMvcController(SimpMessageSendingOperations messagingTemplate) {
-        this.messagingTemplate = messagingTemplate;
-    }
-
     @RequestMapping("/client")
     String client(Model model) { // todo derive this from security principal once integrated
         model.addAttribute("userId", "joshlong");

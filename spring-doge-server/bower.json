@@ -2,12 +2,12 @@
   "name": "doge",
   "version": "1.0.0-SNAPSHOT",
   "dependencies": {
-
     "sockjs": "~0.3",
     "stomp-websocket": "~2.2",
     "requirejs": "~2.1.11",
     "angular": "~1.2.16",
-    "requirejs-domready": "~2.0.1"
+    "requirejs-domready": "~2.0.1",
+    "bootstrap": "~3.1.1"
   },
   "ignore": [
     "test"

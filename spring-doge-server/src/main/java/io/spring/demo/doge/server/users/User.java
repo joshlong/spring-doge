@@ -20,17 +20,18 @@ import org.springframework.data.annotation.Id;
 
 /**
  * A single user of the system. Each {@link User} may submit one or more {@link io.spring.demo.doge.server.photos.DogePhoto}s.
- * 
+ *
  * @author Phillip Webb
  * @author Josh Long
  * @see io.spring.demo.doge.server.photos.DogePhoto
  */
 public class User {
 
-	@Id
-	private String id;
-
-	private String name;
+    @Id
+    private String id;
+    private String password;
+    private String name;
+    private boolean enabled = true;
 
     public String getId() {
         return id;
@@ -44,13 +45,29 @@ public class User {
                 '}';
     }
 
-    public User(String id, String name) {
-		this.id = id;
-		this.name = name;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public String getName() {
-		return this.name;
-	}
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public User(String id, String name, String password) {
+        this(id, name, password, true);
+    }
+
+    public User(String id, String name, String password, boolean enabled) {
+        this.id = id;
+        this.name = name;
+        this.password = password;
+        this.enabled = enabled;
+    }
+
+    User(){}
+
+    public String getName() {
+        return this.name;
+    }
 
 }
