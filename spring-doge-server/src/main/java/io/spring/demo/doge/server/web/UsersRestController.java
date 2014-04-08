@@ -21,11 +21,6 @@ import io.spring.demo.doge.photo.PhotoResource;
 import io.spring.demo.doge.server.domain.DogePhoto;
 import io.spring.demo.doge.server.domain.User;
 import io.spring.demo.doge.server.service.DogeService;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.Collections;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -33,13 +28,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.Collections;
 
 /**
  * MVC Controller for '/users' REST endpoints.
@@ -51,48 +46,42 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/users")
 public class UsersRestController {
 
-	private final DogeService dogePhotoService;
+    private final DogeService dogePhotoService;
 
-	private final SimpMessagingTemplate messaging;
+    private final SimpMessagingTemplate messaging;
 
-	@Autowired
-	public UsersRestController(DogeService dogePhotoService,
-			SimpMessagingTemplate messaging) {
-		this.dogePhotoService = dogePhotoService;
-		this.messaging = messaging;
-	}
+    @Autowired
+    public UsersRestController(DogeService dogePhotoService, SimpMessagingTemplate messaging) {
+        this.dogePhotoService = dogePhotoService;
+        this.messaging = messaging;
+    }
 
-	@RequestMapping(method = RequestMethod.GET, value = "{userId}")
-	public User getUser(@PathVariable String userId) {
-		return this.dogePhotoService.findOne(userId);
-	}
+    @RequestMapping(method = RequestMethod.GET, value = "{userId}")
+    public User getUser(@PathVariable String userId) {
+        return this.dogePhotoService.findOne(userId);
+    }
 
-	@RequestMapping(method = RequestMethod.POST, value = "{userId}/doge")
-	public ResponseEntity<?> postDogePhoto(@PathVariable String userId,
-			@RequestParam MultipartFile file, UriComponentsBuilder uriBuilder)
-			throws IOException {
+    @RequestMapping(method = RequestMethod.POST, value = "{userId}/doge")
+    public ResponseEntity<?> postDogePhoto(@PathVariable String userId, @RequestParam MultipartFile file, UriComponentsBuilder uriBuilder) throws IOException {
+        Photo photo = file::getInputStream;
+        DogePhoto doge = this.dogePhotoService.addDogePhoto(userId, photo);
 
-		Photo photo = file::getInputStream;
-		DogePhoto doge = this.dogePhotoService.addDogePhoto(userId, photo);
-		URI uri = uriBuilder.path("/users/{userId}/doge/{dogeId}")
-				.buildAndExpand(userId, doge.getId()).toUri();
+        URI uri = uriBuilder.path("/users/{userId}/doge/{dogeId}").buildAndExpand(userId, doge.getId()).toUri();
 
-		this.messaging.convertAndSend("/topic/alarms",
-				Collections.singletonMap("dogePhotoUri", uri));
+        this.messaging.convertAndSend("/topic/alarms", Collections.singletonMap("dogePhotoUri", uri));
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(uri);
-		return new ResponseEntity<Void>(null, headers, HttpStatus.CREATED);
-	}
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(uri);
+        return new ResponseEntity<Void>(null, headers, HttpStatus.CREATED);
+    }
 
-	@RequestMapping(method = RequestMethod.GET, value = "{userId}/doge/{dogeId}")
-	public ResponseEntity<Resource> getDogePhoto(@PathVariable String userId,
-			@PathVariable String dogeId) throws IOException {
-		Photo photo = this.dogePhotoService.getDogePhoto(userId, dogeId);
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.IMAGE_JPEG);
-		return new ResponseEntity<Resource>(new PhotoResource(photo), headers,
-				HttpStatus.OK);
-	}
+    @RequestMapping(method = RequestMethod.GET, value = "{userId}/doge/{dogeId}")
+    public ResponseEntity<Resource> getDogePhoto(@PathVariable String userId, @PathVariable String dogeId) throws IOException {
+        Photo photo = this.dogePhotoService.getDogePhoto(userId, dogeId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
+        return new ResponseEntity<Resource>(new PhotoResource(photo), headers,
+                HttpStatus.OK);
+    }
 
 }

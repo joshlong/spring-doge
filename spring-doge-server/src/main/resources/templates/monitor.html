@@ -21,29 +21,15 @@
 </p>
 <![endif]-->
 
-<div ng-controller="ClientController" id="client">
-
-    <h1>Upload an Image </h1>
-
-    <P>Welcome <span th:text="${userId}">philwebb</span>.
-    </P>
-
-    <form enctype="multipart/form-data" method="post"   th:action="${'/users/'+ userId+'/doge'}">
-
-        <input type="file" name="file"/>
-
-        <input type="submit"/>
-    </form>
-
-    <P>
-
-   <!--     <span th:text="{{imgSource}}">the img URL</span>-->
-
-    </P>
+<div ng-controller="MonitorController" id="monitor">
+  <div id="imgPreview" style="width: 300px; ">
+  </div>
 
 </div>
+
+
 <script src="doge.js"></script>
-<script src="lib/requirejs/require.js" data-main="clientApp.js"></script>
+<script src="lib/requirejs/require.js" data-main="monitorApp.js"></script>
 
 </body>
 </html>
