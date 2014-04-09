@@ -1,0 +1,10 @@
+.classpath
+*iml
+.idea
+.gitignore~
+.project
+.settings
+target
+bin
+target
+.DS_Store

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<title>Spring Doge: Such Boot!</title>
+		<meta name="description" content="A simple application demonstrating how to use Spring Boot for evil." />
+		<meta name="viewport" content="width=device-width" />
+	</head>
+	<body>
+		<!--[if lt IE 7]>
+		<p>
+    		You are using an <strong>outdated</strong> browser.
+    		Please upgrade your browser to improve your experience.
+		</p>
+		<![endif]-->
+		<h1>Upload an Image</h1>
+		<div ng-controller="ClientController">
+
+			<P>
+				Welcome <span>{{selectedUser.name}}</span>.
+			</P>
+
+			<select ng-model="selectedUser"
+					ng-options="u.name for u in users | orderBy: 'name'"
+					ng-init="selectedUser.id=user.id"
+					ng-required="true">
+			</select>
+
+			<form enctype="multipart/form-data"
+					method="post"
+					action="{{  '/users/'  + selectedUser.id +'/doge' }}">
+				<input type="file" name="file" />
+				<input type="submit" />
+			</form>
+
+		</div>
+
+		<script src="doge.js"></script>
+		<script src="lib/requirejs/require.js" data-main="clientApp.js"></script>
+
+	</body>
+</html>
