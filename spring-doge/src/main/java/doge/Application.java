@@ -38,6 +38,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -68,6 +70,17 @@ public class Application {
 		MultiPartConfigFactory factory = new MultiPartConfigFactory();
 		factory.setMaxFileSize("10Mb");
 		return factory.createMultipartConfig();
+	}
+
+	@Bean
+	public WebMvcConfigurerAdapter mvcViewConfigurer() {
+		return new WebMvcConfigurerAdapter() {
+			@Override
+			public void addViewControllers(ViewControllerRegistry registry) {
+				registry.addViewController("/client").setViewName("client");
+				registry.addViewController("/monitor").setViewName("monitor");
+			}
+		};
 	}
 
 	@Bean
