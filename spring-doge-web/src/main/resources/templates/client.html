@@ -30,7 +30,8 @@
                 ng-required ="true"
             ></select>
 
-			<form enctype="multipart/form-data" method="post"   action="{{  '/users/'  + selectedUser.id +'/doge' }}">
+			<form enctype="multipart/form-data" method="post"
+                  action="{{  '/users/'  + selectedUser.id +'/doge' }}">
 				<input type="file" name="file" />
                 <input type="submit"/>
 			</form>
