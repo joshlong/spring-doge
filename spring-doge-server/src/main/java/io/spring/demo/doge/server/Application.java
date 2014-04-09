@@ -90,6 +90,19 @@ public class Application {
 		};
 	}
 
+	@Bean
+	public HealthIndicator<Object> mongoHealthIndicator(Mongo mongo) {
+		return () -> {
+			try {
+				mongo.getDatabaseNames();
+				return "ok";
+			}
+			catch (MongoException ex) {
+				return "error";
+			}
+		};
+	}
+
 	@Configuration
 	@EnableWebSocketMessageBroker
 	static class WebSocketConfiguration extends AbstractWebSocketMessageBrokerConfigurer {
@@ -114,24 +127,10 @@ public class Application {
 				"localhost", 2003);
 
 		@Bean
-		public HealthIndicator<Object> mongoHealthIndicator(Mongo mongo) {
-			return () -> {
-				try {
-					mongo.getDatabaseNames();
-					return "ok";
-				}
-				catch (MongoException ex) {
-					return "error";
-				}
-			};
-		}
-
-		@Bean
 		@Conditional(GraphiteCondition.class)
 		public GraphiteReporter graphiteReporter(MetricRegistry registry) {
-			Graphite graphite = new Graphite(ADDRESS);
 			GraphiteReporter reporter = GraphiteReporter.forRegistry(registry)
-					.prefixedWith("doge.spring.io").build(graphite);
+					.prefixedWith("doge.spring.io").build(new Graphite(ADDRESS));
 			reporter.start(2, TimeUnit.SECONDS);
 			return reporter;
 		}

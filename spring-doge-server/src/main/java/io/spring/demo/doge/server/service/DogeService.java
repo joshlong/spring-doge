@@ -30,7 +30,6 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 /**
  * @author Josh Long
@@ -43,18 +42,18 @@ public class DogeService {
 
 	private final DogePhotoRepository dogePhotoRepository;
 
-	private final PhotoManipulator photoManipulator;
+	private final PhotoManipulator manipulator;
 
-	private final GridFsTemplate filesystem;
+	private final GridFsTemplate fs;
 
 	@Autowired
 	public DogeService(UserRepository userRepository,
-			DogePhotoRepository dogePhotoRepository, PhotoManipulator photoManipulator,
-			GridFsTemplate filesystem) {
+			DogePhotoRepository dogePhotoRepository, PhotoManipulator manipulator,
+			GridFsTemplate fs) {
 		this.userRepository = userRepository;
 		this.dogePhotoRepository = dogePhotoRepository;
-		this.photoManipulator = photoManipulator;
-		this.filesystem = filesystem;
+		this.manipulator = manipulator;
+		this.fs = fs;
 	}
 
 	public User findOne(String userId) {
@@ -62,22 +61,17 @@ public class DogeService {
 	}
 
 	public Photo getDogePhoto(String userId, String dogeId) throws IOException {
-		Assert.notNull(userId, "UserID must not be null");
-		Assert.notNull(dogeId, "DogeId must not be null");
 		User user = this.userRepository.findOne(userId);
 		DogePhoto dogePhoto = this.dogePhotoRepository.findOneByIdAndUser(dogeId, user);
-		Assert.state(dogePhoto != null, "No Doge for ID " + dogeId);
-		return () -> this.filesystem.getResource(dogePhoto.getFileRef()).getInputStream();
+		return () -> this.fs.getResource(dogePhoto.getFileRef()).getInputStream();
 	}
 
 	public DogePhoto addDogePhoto(String userId, Photo photo) throws IOException {
-		Assert.notNull(userId, "UserId must not be null");
-		Assert.notNull(photo, "Photo must not be null");
 		User user = this.userRepository.findOne(userId);
-		photo = this.photoManipulator.manipulate(photo);
+		photo = this.manipulator.manipulate(photo);
 		String fileRef = UUID.randomUUID() + ".jpg";
 		try (InputStream inputStream = photo.getInputStream()) {
-			this.filesystem.store(inputStream, fileRef);
+			this.fs.store(inputStream, fileRef);
 		}
 		return this.dogePhotoRepository.save(new DogePhoto(user, fileRef));
 	}

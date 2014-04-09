@@ -51,8 +51,4 @@ public class DogePhoto {
 		return this.fileRef;
 	}
 
-	User getUser() {
-		return this.user;
-	}
-
 }
