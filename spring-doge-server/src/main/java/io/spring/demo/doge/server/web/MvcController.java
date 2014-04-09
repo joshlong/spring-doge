@@ -13,18 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class MvcController {
 
-    public static final String MONITOR = "monitor";
+	@RequestMapping("/monitor")
+	public String monitor() {
+		return "monitor";
+	}
 
-    public static final String CLIENT = "client";
-
-    @RequestMapping("/" + MONITOR)
-    public String monitor() {
-        return MONITOR;
-    }
-
-    @RequestMapping("/" + CLIENT)
-    public String client(Model model) {
-        model.addAttribute("userId", "joshlong"); // todo reinstant once theres a security context
-        return CLIENT;
-    }
+	@RequestMapping("/client")
+	public String client(Model model) {
+		model.addAttribute("userId", "joshlong");
+		return "client";
+	}
 }
