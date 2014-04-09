@@ -19,6 +19,7 @@ package doge.controller;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -38,6 +39,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import doge.domain.DogePhoto;
 import doge.domain.User;
+import doge.domain.UserRepository;
 import doge.photo.Photo;
 import doge.photo.PhotoResource;
 import doge.service.DogeService;
@@ -52,14 +54,23 @@ import doge.service.DogeService;
 @RequestMapping("/users")
 public class UsersRestController {
 
+	private final UserRepository userRepository;
+
 	private final DogeService dogeService;
 
 	private final SimpMessagingTemplate messaging;
 
 	@Autowired
-	public UsersRestController(DogeService dogeService, SimpMessagingTemplate messaging) {
+	public UsersRestController(UserRepository userRepository, DogeService dogeService,
+			SimpMessagingTemplate messaging) {
+		this.userRepository = userRepository;
 		this.dogeService = dogeService;
 		this.messaging = messaging;
+	}
+
+	@RequestMapping(method = RequestMethod.GET)
+	public List<User> getUsers() {
+		return this.userRepository.findAll();
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "{userId}")
