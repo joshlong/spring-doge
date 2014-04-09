@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import doge.domain.DogePhoto;
 import doge.domain.DogePhotoRepository;
 import doge.domain.User;
-import doge.domain.UserRepository;
 import doge.photo.Photo;
 import doge.photo.PhotoManipulator;
 
@@ -38,8 +37,6 @@ import doge.photo.PhotoManipulator;
 @Service
 public class DogeService {
 
-	private final UserRepository userRepository;
-
 	private final DogePhotoRepository dogePhotoRepository;
 
 	private final PhotoManipulator manipulator;
@@ -47,27 +44,19 @@ public class DogeService {
 	private final GridFsTemplate fs;
 
 	@Autowired
-	public DogeService(UserRepository userRepository,
-			DogePhotoRepository dogePhotoRepository, PhotoManipulator manipulator,
-			GridFsTemplate fs) {
-		this.userRepository = userRepository;
+	public DogeService(DogePhotoRepository dogePhotoRepository,
+			PhotoManipulator manipulator, GridFsTemplate fs) {
 		this.dogePhotoRepository = dogePhotoRepository;
 		this.manipulator = manipulator;
 		this.fs = fs;
 	}
 
-	public User findOne(String userId) {
-		return this.userRepository.findOne(userId);
-	}
-
-	public Photo getDogePhoto(String userId, String dogeId) throws IOException {
-		User user = this.userRepository.findOne(userId);
+	public Photo getDogePhoto(User user, String dogeId) throws IOException {
 		DogePhoto dogePhoto = this.dogePhotoRepository.findOneByIdAndUser(dogeId, user);
 		return () -> this.fs.getResource(dogePhoto.getFileRef()).getInputStream();
 	}
 
-	public DogePhoto addDogePhoto(String userId, Photo photo) throws IOException {
-		User user = this.userRepository.findOne(userId);
+	public DogePhoto addDogePhoto(User user, Photo photo) throws IOException {
 		photo = this.manipulator.manipulate(photo);
 		String fileRef = UUID.randomUUID() + ".jpg";
 		try (InputStream inputStream = photo.getInputStream()) {

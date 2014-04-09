@@ -1,8 +1,7 @@
 var appName = 'client';
 
-
 /***
- * Displays newly uploaded images communicated using websockets
+ * Uploads images to made doge-tastic
  */
 require.config({
     paths: {
@@ -28,7 +27,6 @@ define([ 'require' ,  'angular'], function (require, angular) {
 
     angular.module(appName, [])
         .controller('ClientController', [ '$scope', '$http', '$log',  function ($scope, $http, $log) {
-
 
             $scope.users = [];
 
