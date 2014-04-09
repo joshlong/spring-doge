@@ -135,7 +135,7 @@ public class DogePhotoManipulator implements PhotoManipulator {
 	private void renderOverlay(BufferedImage image, Graphics2D graphics) {
 		int y = image.getHeight() - this.dogeLogo.getHeight();
 		graphics.drawImage(this.dogeLogo, 0, y, null);
-		getRandomText().render(graphics);
+		getRandomText().render(image, graphics);
 	}
 
 	private Text getRandomText() {
@@ -172,19 +172,20 @@ public class DogePhotoManipulator implements PhotoManipulator {
 			this.such = such;
 		}
 
-		public void render(Graphics2D g) {
-			renderText(g, "wow", 32, Color.MAGENTA, 25, 43);
-			renderText(g, "very " + this.very, 29, Color.GREEN, 105, 115);
-			renderText(g, "so " + this.so, 20, Color.MAGENTA, 25, 330);
-			renderText(g, "such " + this.such, 30, Color.ORANGE, 125, 385);
+		public void render(BufferedImage image, Graphics2D g) {
+			double r = image.getHeight() / 448.0;
+			renderText(g, "wow", 32, Color.MAGENTA, 25, r * 43);
+			renderText(g, "very " + this.very, 29, Color.GREEN, 105, r * 115);
+			renderText(g, "so " + this.so, 20, Color.MAGENTA, 25, r * 330);
+			renderText(g, "such " + this.such, 30, Color.ORANGE, 125, r * 385);
 		}
 
 		private void renderText(Graphics2D g, String text, int fontSize, Paint paint,
-				int x, int y) {
+				double x, double y) {
 			Font font = new Font("Comic Sans MS", Font.BOLD, fontSize);
 			GlyphVector vector = font.createGlyphVector(g.getFontRenderContext(),
 					text.toCharArray());
-			Shape shape = vector.getOutline(x, y);
+			Shape shape = vector.getOutline((int) x, (int) y);
 			g.setStroke(new BasicStroke(0.5f));
 			g.setPaint(paint);
 			g.fill(shape);
