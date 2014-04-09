@@ -73,17 +73,13 @@ public class UsersRestController {
 		return this.userRepository.findAll();
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "{userId}")
-	public User getUser(@PathVariable String userId) {
-		return this.dogeService.findOne(userId);
-	}
-
 	@RequestMapping(method = RequestMethod.POST, value = "{userId}/doge")
 	public ResponseEntity<?> postDogePhoto(@PathVariable String userId,
 			@RequestParam MultipartFile file, UriComponentsBuilder uriBuilder)
 			throws IOException {
 		Photo photo = file::getInputStream;
-		DogePhoto doge = this.dogeService.addDogePhoto(userId, photo);
+		User user = userRepository.findOne(userId);
+		DogePhoto doge = this.dogeService.addDogePhoto(user, photo);
 
 		URI uri = uriBuilder.path("/users/{userId}/doge/{dogeId}")
 				.buildAndExpand(userId, doge.getId()).toUri();
@@ -99,7 +95,8 @@ public class UsersRestController {
 	@ResponseStatus(HttpStatus.OK)
 	public Resource getDogePhoto(@PathVariable String userId, @PathVariable String dogeId)
 			throws IOException {
-		Photo photo = this.dogeService.getDogePhoto(userId, dogeId);
+		User user = userRepository.findOne(userId);
+		Photo photo = this.dogeService.getDogePhoto(user, dogeId);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.IMAGE_JPEG);
 		return new PhotoResource(photo);
