@@ -93,7 +93,6 @@ public class DogePhotoManipulator implements PhotoManipulator {
 			param.setCompressionQuality(0.85f);
 			writer.setOutput(ios);
 			writer.write(null, new IIOImage(destinationImage, null, null), param);
-
 			ImageIO.write(destinationImage, "jpeg", outputStream);
 			return new ByteArrayInputStream(outputStream.toByteArray());
 		};
@@ -133,9 +132,9 @@ public class DogePhotoManipulator implements PhotoManipulator {
 	}
 
 	private void renderOverlay(BufferedImage image, Graphics2D graphics) {
+		getRandomText().render(image, graphics);
 		int y = image.getHeight() - this.dogeLogo.getHeight();
 		graphics.drawImage(this.dogeLogo, 0, y, null);
-		getRandomText().render(image, graphics);
 	}
 
 	private Text getRandomText() {
