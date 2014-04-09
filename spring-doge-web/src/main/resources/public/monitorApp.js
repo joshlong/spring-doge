@@ -59,10 +59,12 @@ define([ 'require' , 'angular'], function (require, angular) {
 
             $scope.onDoge = function (uri) {
                 console.log(uri + '');
-                document.getElementById('imgPreview') .appendChild($scope.createImage(uri, 'Such Doge', 'Such Boot!'));
+                var element = document.getElementById('imgPreview');
+                var image = $scope.createImage(uri, 'Such Doge', 'Such Boot!');
+                image.style.visibility = "hidden";
+                element.insertBefore(image, element.firstChild);
+                image.className = "fadeIn";
             };
-
             $scope.imageContainer = null;
-
         }]);
 });
