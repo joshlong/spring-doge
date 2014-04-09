@@ -60,7 +60,7 @@ define([ 'require' , 'angular'], function (require, angular) {
             $scope.onDoge = function (uri) {
                 console.log(uri + '');
                 var element = document.getElementById('imgPreview');
-                var image = $scope.createImage(uri, 'Such Doge', 'Such Boot!');
+                var image = $scope.createImage(uri, 'Such Doge!', 'Such Boot!');
                 image.style.visibility = "hidden";
                 element.insertBefore(image, element.firstChild);
                 image.className = "fadeIn";

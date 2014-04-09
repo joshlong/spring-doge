@@ -19,12 +19,22 @@ require.config({
     }
 });
 
-define([ 'require' , 'doge', 'angular'], function (require, angular) {
+define([ 'require' ,  'angular'], function (require, angular) {
     'use strict';
-    require(['sockjs', 'angular', 'stomp' , 'domReady!'], function (sockjs, angular, stomp) {
+
+    require(['sockjs', 'angular', 'stomp' , 'domReady!'], function (sockjs, angular ) {
         angular.bootstrap(document, [appName]);
     });
 
-    var doge = angular.module(appName, []);
-    doge.controller('ClientController', [ '$scope', '$http', '$log', function ($scope, $http, $log) { } ]);
+    angular.module(appName, [])
+        .controller('ClientController', [ '$scope', '$http', '$log',  function ($scope, $http, $log) {
+
+
+            $scope.users = [];
+
+            $http.get('/users').success(function(data) {
+                $scope.users = data;
+            });
+
+    }]);
 });

@@ -14,14 +14,28 @@
     		Please upgrade your browser to improve your experience.
 		</p>
 		<![endif]-->
-		<div ng-controller="ClientController" id="client">
-			<h1>Upload an Image</h1>
+
+        <h1>Upload an Image</h1>
+
+		<div ng-controller="ClientController">
+
 			<P>
-				Welcome <span th:text="${userId}">philwebb</span>.
+				Welcome <span>{{selectedUser.id}}</span>.
 			</P>
-			<form enctype="multipart/form-data" method="post" th:action="${'/users/'+ userId+'/doge'}">
-				<input type="file" name="file" /> <input type="submit" />
+
+            <select
+                ng-model="selectedUser"
+                ng-options="u.name for u in users | orderBy: 'name'"
+                ng-init="selectedUser.id=user.id"
+                ng-required ="true"
+            ></select>
+
+			<form enctype="multipart/form-data" method="post"   action="{{  '/users/'  + selectedUser.id +'/doge' }}">
+				<input type="file" name="file" />
+                <input type="submit"/>
 			</form>
+
+
 		</div>
 		<script src="doge.js"></script>
 		<script src="lib/requirejs/require.js" data-main="clientApp.js"></script>
