@@ -19,22 +19,25 @@ require.config({
     }
 });
 
-define([ 'require' ,  'angular'], function (require, angular) {
+define([ 'require' , 'angular'], function (require, angular) {
     'use strict';
 
-    require(['sockjs', 'angular', 'stomp' , 'domReady!'], function (sockjs, angular ) {
+    require(['sockjs', 'angular', 'stomp' , 'domReady!'], function (sockjs, angular) {
         angular.bootstrap(document, [appName]);
     });
 
     angular.module(appName, [])
-        .controller('ClientController', [ '$scope', '$http', '$log',  function ($scope, $http, $log) {
+        .controller('ClientController', [ '$scope', '$http', '$log', function ($scope, $http, $log) {
 
 
             $scope.users = [];
 
-            $http.get('/users').success(function(data) {
+            $http.get('/users').success(function (data) {
                 $scope.users = data;
+                if ($scope.users != null && $scope.users.length > 0) {
+                    $scope.selectedUser = $scope.users[0];
+                }
             });
 
-    }]);
+        }]);
 });

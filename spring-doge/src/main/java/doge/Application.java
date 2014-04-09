@@ -84,8 +84,8 @@ public class Application {
 	@Bean
 	public InitializingBean populateTestData(UserRepository repository) {
 		return () -> {
-			repository.save(new User("joshlong", "Josh Long"));
 			repository.save(new User("philwebb", "Phil Webb"));
+			repository.save(new User("joshlong", "Josh Long"));
 			repository.findAll().forEach(System.err::println);
 		};
 	}
