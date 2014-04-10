@@ -7,6 +7,7 @@
 		<title>Spring Doge: Such Boot!</title>
 		<meta name="description" content="A simple application demonstrating how to use Spring Boot for evil." />
 		<meta name="viewport" content="width=device-width" />
+		<link rel="stylesheet" href="css/doge.css" />
 	</head>
 	<body>
 		<!--[if lt IE 7]>
@@ -16,11 +17,8 @@
 		</p>
 		<![endif]-->
 		<h1>Upload an Image</h1>
-		<div ng-controller="ClientController">
+		<div ng-controller="ClientController" class="ng-cloak">
 
-			<P>
-				Welcome <span>{{selectedUser.name}}</span>.
-			</P>
 
 			<select ng-model="selectedUser"
 					ng-options="u.name for u in users | orderBy: 'name'"
@@ -28,12 +26,25 @@
 					ng-required="true">
 			</select>
 
-			<form enctype="multipart/form-data"
-					method="post"
-					action="{{  '/users/'  + selectedUser.id +'/doge' }}">
-				<input type="file" name="file" />
-				<input type="submit" />
-			</form>
+			<P>
+				Welcome <span>{{selectedUser.name}}</span>.
+			</P>
+
+			<div ng-show="dropSupported" class="drop-box"
+					ng-file-drop="onFileSelect($files);"
+					ng-file-drop-available="dropSupported=true">
+				Drop files to "Dogeify" here
+			</div>
+
+			<div ng-show="!dropSupported">
+				HTML5 Drop File is not supported on this browser
+			</div>
+
+			<ul id="uploads">
+			 	<li ng-repeat="dogeUpload in dogeUploads">
+			 		<a href="{{dogeUpload}}"><img src="{{dogeUpload}}"/>{{dogeUpload}}</a>
+			 	</li>
+			</ul>
 
 		</div>
 
