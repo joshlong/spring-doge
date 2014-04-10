@@ -1,0 +1,12 @@
+.drop-box {
+	background: none repeat scroll 0 0 #F8F8F8;
+	border: 5px dashed #DDDDDD;
+	height: 65px;
+	padding-top: 35px;
+	text-align: center;
+	width: 200px;
+}
+
+.drop-box.dragover {
+	border: 5px dashed blue;
+}

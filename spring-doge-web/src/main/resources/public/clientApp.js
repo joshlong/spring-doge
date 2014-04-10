@@ -1,40 +1,57 @@
 var appName = 'client';
 
-/***
+/*******************************************************************************
  * Uploads images to made doge-tastic
  */
 require.config({
-    paths: {
-        doge: 'doge',
-        stomp: doge.jsUrl('stomp-websocket/lib/stomp'),
-        sockjs: doge.jsUrl('sockjs/sockjs'),
-        angular: doge.jsUrl('angular/angular'),
-        domReady: doge.jsUrl('requirejs-domready/domReady')
-    },
-    shim: {
-        angular: {
-            exports: 'angular'
-        }
-    }
+	paths : {
+		doge : 'doge',
+		stomp : doge.jsUrl('stomp-websocket/lib/stomp'),
+		sockjs : doge.jsUrl('sockjs/sockjs'),
+		angular : doge.jsUrl('angular/angular'),
+		angularFileUpload : doge.jsUrl('ng-file-upload/angular-file-upload'),
+		domReady : doge.jsUrl('requirejs-domready/domReady')
+	},
+	shim : {
+		angular : {
+			exports : 'angular'
+		}
+	}
 });
 
-define([ 'require' , 'angular'], function (require, angular) {
-    'use strict';
+define([ 'require', 'angular' ], function(require, angular) {
 
-    require(['sockjs', 'angular', 'stomp' , 'domReady!'], function (sockjs, angular) {
-        angular.bootstrap(document, [appName]);
-    });
+	'use strict';
 
-    angular.module(appName, [])
-        .controller('ClientController', [ '$scope', '$http', '$log', function ($scope, $http, $log) {
+	require([ 'angular', 'angularFileUpload', 'sockjs', 'stomp', 'domReady!' ],
+			function(angular) {
+				angular.bootstrap(document, [ appName ]);
+			});
 
-            $scope.users = [];
+	angular.module(appName, [ 'angularFileUpload' ]).controller('ClientController',
+			[ '$scope', '$http', '$upload', '$log', function($scope, $http, $upload, $log) {
 
-            $http.get('/users').success(function (data) {
-                $scope.users = data;
-                if ($scope.users != null && $scope.users.length > 0) {
-                    $scope.selectedUser = $scope.users[0];
-                }
-            });
-    }]);
+				$scope.users = [];
+
+				$http.get('/users').success(function(data) {
+					$scope.users = data;
+					if ($scope.users != null && $scope.users.length > 0) {
+						$scope.selectedUser = $scope.users[0];
+					}
+				});
+
+				$scope.onFileSelect = function($files) {
+					for (var i = 0; i < $files.length; i++) {
+						$scope.upload = $upload.upload({
+							url : '/users/' + $scope.selectedUser.id + '/doge',
+							method : 'POST',
+							file : $files[i],
+							fileFormDataName: 'file'
+						}).success(function(data, status, headers, config) {
+							console.log(headers('location'));
+						});
+					}
+				}
+
+			} ]);
 });

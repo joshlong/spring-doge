@@ -1,5 +1,5 @@
 var doge = {
-    jsUrl: function (p) {
-        return 'lib/' + p;
-    }
+	jsUrl : function(p) {
+		return 'lib/' + p;
+	}
 };
