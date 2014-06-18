@@ -21,21 +21,16 @@ import com.codahale.metrics.graphite.Graphite;
 import com.codahale.metrics.graphite.GraphiteReporter;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
-import com.mongodb.MongoURI;
 import doge.domain.User;
 import doge.domain.UserRepository;
 import doge.photo.DogePhotoManipulator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoProperties;
-import org.springframework.boot.context.embedded.MultiPartConfigFactory;
 import org.springframework.context.annotation.*;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -43,7 +38,6 @@ import org.springframework.web.socket.config.annotation.AbstractWebSocketMessage
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
-import javax.servlet.MultipartConfigElement;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.TimeUnit;
@@ -59,15 +53,9 @@ import java.util.concurrent.TimeUnit;
 @EnableAutoConfiguration
 public class Application {
 
-    @Bean
-    public MultipartConfigElement multipartConfigElement() {
-        MultiPartConfigFactory factory = new MultiPartConfigFactory();
-        factory.setMaxFileSize("10Mb");
-        return factory.createMultipartConfig();
-    }
 
     @Bean
-    public WebMvcConfigurerAdapter mvcViewConfigurer() {
+    WebMvcConfigurerAdapter mvcViewConfigurer() {
         return new WebMvcConfigurerAdapter() {
             @Override
             public void addViewControllers(ViewControllerRegistry registry) {
@@ -78,20 +66,12 @@ public class Application {
     }
 
     @Bean
-    public DogePhotoManipulator dogePhotoManipulator() {
+    DogePhotoManipulator dogePhotoManipulator() {
         return new DogePhotoManipulator();
     }
 
     @Bean
-    public GridFsTemplate gridFsTemplate(MongoProperties properties, MongoTemplate mongo)
-            throws Exception {
-        MongoURI mongoURI = new MongoURI(properties.getUri());
-        SimpleMongoDbFactory simpleMongoDbFactory = new SimpleMongoDbFactory(mongoURI);
-        return new GridFsTemplate(simpleMongoDbFactory, mongo.getConverter());
-    }
-
-    @Bean
-    public InitializingBean populateTestData(UserRepository repository) {
+    InitializingBean populateTestData(UserRepository repository) {
         return () -> {
             repository.save(new User("philwebb", "Phil Webb"));
             repository.save(new User("joshlong", "Josh Long"));
@@ -100,13 +80,13 @@ public class Application {
     }
 
     @Bean
-    public HealthIndicator<Object> mongoHealthIndicator(Mongo mongo) {
+    HealthIndicator mongoHealthIndicator(Mongo mongo) {
         return () -> {
             try {
                 mongo.getDatabaseNames();
-                return "ok";
+                return Health.status("ok").build();
             } catch (MongoException ex) {
-                return "error";
+                return Health.status("error").build();
             }
         };
     }

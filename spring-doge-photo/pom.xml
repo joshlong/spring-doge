@@ -12,6 +12,11 @@
 		<main.basedir>${basedir}/..</main.basedir>
 	</properties>
 	<dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <scope>test</scope>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
