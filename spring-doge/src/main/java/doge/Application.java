@@ -19,16 +19,12 @@ package doge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.graphite.Graphite;
 import com.codahale.metrics.graphite.GraphiteReporter;
-import com.mongodb.Mongo;
-import com.mongodb.MongoException;
 import doge.domain.User;
 import doge.domain.UserRepository;
 import doge.photo.DogePhotoManipulator;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.*;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -53,7 +49,6 @@ import java.util.concurrent.TimeUnit;
 @EnableAutoConfiguration
 public class Application {
 
-
     @Bean
     WebMvcConfigurerAdapter mvcViewConfigurer() {
         return new WebMvcConfigurerAdapter() {
@@ -76,18 +71,6 @@ public class Application {
             repository.save(new User("philwebb", "Phil Webb"));
             repository.save(new User("joshlong", "Josh Long"));
             repository.findAll().forEach(System.err::println);
-        };
-    }
-
-    @Bean
-    HealthIndicator mongoHealthIndicator(Mongo mongo) {
-        return () -> {
-            try {
-                mongo.getDatabaseNames();
-                return Health.status("ok").build();
-            } catch (MongoException ex) {
-                return Health.status("error").build();
-            }
         };
     }
 
@@ -140,7 +123,9 @@ public class Application {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        new SpringApplicationBuilder()
+                .sources(Application.class)
+                .run(args);
     }
 
 }
