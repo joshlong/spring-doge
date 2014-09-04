@@ -6,7 +6,8 @@
         <groupId>io.spring.doge</groupId>
         <artifactId>spring-doge-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-    </parent>
+    </parent> 
+	<name>spring-doge</name>
     <artifactId>spring-doge</artifactId>
     <properties>
         <main.basedir>${basedir}/..</main.basedir>
