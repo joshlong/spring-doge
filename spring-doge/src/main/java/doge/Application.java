@@ -25,12 +25,14 @@ import doge.domain.User;
 import doge.domain.UserRepository;
 import doge.photo.DogePhotoManipulator;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.cloud.config.java.AbstractCloudConfig;
 import org.springframework.context.annotation.*;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -53,6 +55,7 @@ import java.util.concurrent.TimeUnit;
 @EnableAutoConfiguration
 public class Application {
 
+   // public static final String CLOUD_PROFILE = "cloud" ;
 
     @Bean
     WebMvcConfigurerAdapter mvcViewConfigurer() {
@@ -139,8 +142,22 @@ public class Application {
         }
     }
 
+
+  //  @Profile(CLOUD_PROFILE )
+    @Configuration
+    static class CloudConfiguration extends AbstractCloudConfig {
+
+        @Bean
+        MongoDbFactory mongo() {
+            return this.connectionFactory().mongoDbFactory();
+        }
+    }
+
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        new SpringApplicationBuilder()
+                .sources(Application.class)
+             //   .profiles(CLOUD_PROFILE)
+                .run(args);
     }
 
 }
