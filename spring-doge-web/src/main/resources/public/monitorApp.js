@@ -41,7 +41,9 @@ define([ 'require', 'angular' ], function(require, angular) {
 					client.connect({}, function(frame) {
 						console.log('Connected ' + frame);
 						client.subscribe("/topic/alarms", function(message) {
-							var uri = JSON.parse(message.body).dogePhotoUri;
+                            var body = JSON.parse(message.body);
+                            var uri = body.dogePhotoUri;
+                           // console.log (  'the body is ' + body )
 
 							$scope.$apply(function() {
 								$scope.onDoge(uri);
@@ -63,10 +65,9 @@ define([ 'require', 'angular' ], function(require, angular) {
 				};
 
 				$scope.onDoge = function(uri) {
-					console.log(uri + '');
+					//console.log( uri + '');
 					var element = document.getElementById('imgPreview');
-					var image = $scope.createImage(uri, 'Such Doge!',
-							'Such Boot!');
+					var image = $scope.createImage(uri, 'Such Doge!', 'Such Boot!');
 					image.style.visibility = "hidden";
 					element.insertBefore(image, element.firstChild);
 					image.className = "fadeIn";

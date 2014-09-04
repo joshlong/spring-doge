@@ -54,7 +54,7 @@ public class Application {
         return new WebMvcConfigurerAdapter() {
             @Override
             public void addViewControllers(ViewControllerRegistry registry) {
-                registry.addViewController("/client").setViewName("client");
+                registry.addViewController("/").setViewName("client");
                 registry.addViewController("/monitor").setViewName("monitor");
             }
         };
