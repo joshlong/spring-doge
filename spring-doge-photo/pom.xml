@@ -13,26 +13,6 @@
     </properties>
     <dependencies>
 
-        <!-- Spring Cloud
-        -->
-        <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-spring-service-connector</artifactId>
-        <version>1.1.0.RELEASE</version>
-    </dependency>
-     <!--   &lt;!&ndash; to use Spring Cloud for development &ndash;&gt;
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-localconfig-connector</artifactId>
-            <version>1.1.0.RELEASE</version>
-        </dependency>-->
-
-        <!-- If you intend to deploy the app to Cloud Foundry -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-cloudfoundry-connector</artifactId>
-            <version>1.1.0.RELEASE</version>
-        </dependency>
 
 
         <dependency>
