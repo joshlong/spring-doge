@@ -36,10 +36,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
 
-import doge.controller.UsersRestController;
 import doge.domain.User;
 import doge.domain.UserRepository;
 import doge.service.DogeService;
+
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -86,8 +86,6 @@ public class UsersRestControllerTest {
 		result.andExpect(status().isOk());
 		result.andExpect(content().string(containsString("Phil Webb")));
 	}
-
-	// FIXME additional tests
 
 }
 

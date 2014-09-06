@@ -1,11 +1,12 @@
 package doge.photo;
+
+import java.io.File;
+import java.io.FileOutputStream;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileCopyUtils;
-
-import java.io.File;
-import java.io.FileOutputStream;
 
 /**
  * Tests for {@link DogePhotoManipulator}.

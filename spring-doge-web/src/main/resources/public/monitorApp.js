@@ -62,8 +62,6 @@ define([ 'require', 'angular' ], function (require, angular) {
                 return img;
             };
 
-
-
             $scope.onDoge = function (msg) {
                 $scope.uploads.push(msg);
                 $scope.size = $scope.uploads.length

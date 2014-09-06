@@ -25,4 +25,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  * @author Phillip Webb
  */
 public interface UserRepository extends MongoRepository<User, String> {
+
 }
