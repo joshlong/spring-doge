@@ -16,9 +16,25 @@
 			Please upgrade your browser to improve your experience.
 		</p>
 		<![endif]-->
-		<div ng-controller="MonitorController" id="monitor">
-			<div id="imgPreview" style="width: 300px;"></div>
-		</div>
+
+
+
+        <div ng-controller="MonitorController" id="monitor">
+
+            <div id="imgPreview" style="width: 300px;">
+
+                Showing {{size}} upload(s).
+
+                <div ng-repeat="u in uploads">
+                    <img class="fadeIn" ng-src="{{u.dogePhotoUri}}" />
+                    <div style="font-size: smaller; padding-bottom: 1em;"> by <b>{{ u.userName }} </b> on {{ u.uploadDate }}.</div>
+                </div>
+
+
+            </div>
+        </div>
+
+
 		<script src="doge.js"></script>
 		<script src="lib/requirejs/require.js" data-main="monitorApp.js"></script>
 	</body>

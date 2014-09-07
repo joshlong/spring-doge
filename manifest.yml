@@ -5,7 +5,7 @@ applications:
   instances: 1
   host: doge-${random-word}
   domain: cfapps.io
-  path: spring-doge/target/spring-doge-0.0.1-SNAPSHOT.jar
+  path: spring-doge/target/spring-doge.jar
   buildpack: https://github.com/cloudfoundry/java-buildpack.git
   services:
     - doge-mongo
