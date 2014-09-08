@@ -64,8 +64,9 @@ public class DogePhotoManipulator implements PhotoManipulator {
 		text.add(new Text("pivotal", "abstractfactorybean", "java"));
 		text.add(new Text("spring", "annotations", "boot"));
 		text.add(new Text("code", "semicolonfree", "groovy"));
-		text.add(new Text("twitter", "moaning", "grump"));
+		text.add(new Text("clean", "juergenized", "spring"));
 		text.add(new Text("js", "nonblocking", "wat"));
+		text.add(new Text("dallas", "springone", "2gx"));
 		this.text = Collections.unmodifiableList(text);
 	}
 
