@@ -16,12 +16,15 @@
 
 package doge;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import doge.domain.User;
+import doge.domain.UserRepository;
 import doge.photo.DogePhotoManipulator;
 
 /**
@@ -44,6 +47,15 @@ public class Application {
 		dogePhotoManipulator.addTextOverlay("clean", "juergenized", "spring");
 		dogePhotoManipulator.addTextOverlay("js", "nonblocking", "wat");
 		return dogePhotoManipulator;
+	}
+
+	@Bean
+	InitializingBean populateTestData(UserRepository repository) {
+		return () -> {
+			repository.save(new User("philwebb", "Phil Webb"));
+			repository.save(new User("joshlong", "Josh Long"));
+			repository.findAll().forEach(System.err::println);
+		};
 	}
 
 	public static void main(String[] args) {
