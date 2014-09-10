@@ -16,19 +16,16 @@
 
 package doge;
 
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.util.concurrent.TimeUnit;
-
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.graphite.Graphite;
+import com.codahale.metrics.graphite.GraphiteReporter;
+import doge.domain.User;
+import doge.domain.UserRepository;
+import doge.photo.DogePhotoManipulator;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -37,13 +34,9 @@ import org.springframework.web.socket.config.annotation.AbstractWebSocketMessage
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.graphite.Graphite;
-import com.codahale.metrics.graphite.GraphiteReporter;
-
-import doge.domain.User;
-import doge.domain.UserRepository;
-import doge.photo.DogePhotoManipulator;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Application configuration and main method.
@@ -56,82 +49,81 @@ import doge.photo.DogePhotoManipulator;
 @EnableAutoConfiguration
 public class Application {
 
-	@Bean
-	WebMvcConfigurerAdapter mvcViewConfigurer() {
-		return new WebMvcConfigurerAdapter() {
-			@Override
-			public void addViewControllers(ViewControllerRegistry registry) {
-				registry.addViewController("/").setViewName("client");
-				registry.addViewController("/monitor").setViewName("monitor");
-			}
-		};
-	}
+    @Bean
+    WebMvcConfigurerAdapter mvcViewConfigurer() {
+        return new WebMvcConfigurerAdapter() {
+            @Override
+            public void addViewControllers(ViewControllerRegistry registry) {
+                registry.addViewController("/").setViewName("client");
+                registry.addViewController("/monitor").setViewName("monitor");
+            }
+        };
+    }
 
-	@Bean
-	DogePhotoManipulator dogePhotoManipulator() {
-		return new DogePhotoManipulator();
-	}
+    @Bean
+    DogePhotoManipulator dogePhotoManipulator() {
+        return new DogePhotoManipulator();
+    }
 
-	@Bean
-	InitializingBean populateTestData(UserRepository repository) {
-		return () -> {
-			repository.save(new User("philwebb", "Phil Webb"));
-			repository.save(new User("joshlong", "Josh Long"));
-			repository.findAll().forEach(System.err::println);
-		};
-	}
+    @Bean
+    InitializingBean populateTestData(UserRepository repository) {
+        return () -> {
+            repository.save(new User("philwebb", "Phil Webb"));
+            repository.save(new User("joshlong", "Josh Long"));
+            repository.findAll().forEach(System.err::println);
+        };
+    }
 
-	@Configuration
-	@EnableWebSocketMessageBroker
-	static class WebSocketConfiguration extends AbstractWebSocketMessageBrokerConfigurer {
+    @Configuration
+    @EnableWebSocketMessageBroker
+    static class WebSocketConfiguration extends AbstractWebSocketMessageBrokerConfigurer {
 
-		@Override
-		public void registerStompEndpoints(StompEndpointRegistry registry) {
-			registry.addEndpoint("/doge").withSockJS();
-		}
+        @Override
+        public void registerStompEndpoints(StompEndpointRegistry registry) {
+            registry.addEndpoint("/doge").withSockJS();
+        }
 
-		@Override
-		public void configureMessageBroker(MessageBrokerRegistry registry) {
-			registry.enableSimpleBroker("/queue/", "/topic/");
-			registry.setApplicationDestinationPrefixes("/app");
-		}
+        @Override
+        public void configureMessageBroker(MessageBrokerRegistry registry) {
+            registry.enableSimpleBroker("/queue/", "/topic/");
+            registry.setApplicationDestinationPrefixes("/app");
+        }
 
-	}
+    }
 
-	@Configuration
-	static class MetricsConfiguration {
+    @Configuration
+    static class MetricsConfiguration {
 
-		private static final InetSocketAddress ADDRESS = new InetSocketAddress(
-				"localhost", 2003);
+        private static final InetSocketAddress ADDRESS = new InetSocketAddress(
+                "localhost", 2003);
 
-		@Bean
-		@Conditional(GraphiteCondition.class)
-		public GraphiteReporter graphiteReporter(MetricRegistry registry) {
-			GraphiteReporter reporter = GraphiteReporter.forRegistry(registry)
-					.prefixedWith("doge.spring.io").build(new Graphite(ADDRESS));
-			reporter.start(2, TimeUnit.SECONDS);
-			return reporter;
-		}
+        @Bean
+        @Conditional(GraphiteCondition.class)
+        public GraphiteReporter graphiteReporter(MetricRegistry registry) {
+            GraphiteReporter reporter = GraphiteReporter.forRegistry(registry)
+                    .prefixedWith("doge.spring.io").build(new Graphite(ADDRESS));
+            reporter.start(2, TimeUnit.SECONDS);
+            return reporter;
+        }
 
-		public static class GraphiteCondition implements Condition {
-			@Override
-			public boolean matches(ConditionContext context,
-					AnnotatedTypeMetadata metadata) {
-				Socket socket = new Socket();
-				try {
-					socket.connect(ADDRESS);
-					socket.close();
-					return true;
-				}
-				catch (Exception ex) {
-					return false;
-				}
-			}
-		}
-	}
+        public static class GraphiteCondition implements Condition {
+            @Override
+            public boolean matches(ConditionContext context,
+                                   AnnotatedTypeMetadata metadata) {
+                Socket socket = new Socket();
+                try {
+                    socket.connect(ADDRESS);
+                    socket.close();
+                    return true;
+                } catch (Exception ex) {
+                    return false;
+                }
+            }
+        }
+    }
 
-	public static void main(String[] args) {
-		new SpringApplicationBuilder().sources(Application.class).run(args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 
 }
