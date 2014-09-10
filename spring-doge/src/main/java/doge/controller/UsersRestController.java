@@ -18,7 +18,9 @@ package doge.controller;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -26,6 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -56,10 +59,14 @@ public class UsersRestController {
 
 	private final DogeService dogeService;
 
+	private final SimpMessagingTemplate messaging;
+
 	@Autowired
-	public UsersRestController(UserRepository userRepository, DogeService dogeService) {
+	public UsersRestController(UserRepository userRepository, DogeService dogeService,
+			SimpMessagingTemplate messaging) {
 		this.userRepository = userRepository;
 		this.dogeService = dogeService;
+		this.messaging = messaging;
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -76,7 +83,17 @@ public class UsersRestController {
 		DogePhoto doge = this.dogeService.addDogePhoto(user, photo);
 		URI uri = uriBuilder.path("/users/{userId}/doge/{dogeId}")
 				.buildAndExpand(userId, doge.getId()).toUri();
+		sendMessage(user, uri);
 		return ResponseEntity.created(uri).build();
+	}
+
+	private void sendMessage(User user, URI uri) {
+		Map<String, String> msg = new HashMap<>();
+		msg.put("dogePhotoUri", uri.toString());
+		msg.put("userId", user.getId());
+		msg.put("userName", user.getName());
+		msg.put("uploadDate", java.time.Clock.systemUTC().instant().toString());
+		this.messaging.convertAndSend("/topic/alarms", msg);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "{userId}/doge/{dogeId}", produces = MediaType.IMAGE_JPEG_VALUE)

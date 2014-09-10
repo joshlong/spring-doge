@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -93,6 +94,11 @@ public class UsersRestControllerTest {
 @Import(UsersRestController.class)
 @Profile("unittest")
 class TestConfiguration {
+
+	@Bean
+	public SimpMessagingTemplate messageTemplate() {
+		return mock(SimpMessagingTemplate.class);
+	}
 
 	@Bean
 	public UserRepository userRepository() {
