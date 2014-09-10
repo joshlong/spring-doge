@@ -22,6 +22,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import doge.domain.User;
 import doge.domain.UserRepository;
@@ -37,6 +39,17 @@ import doge.photo.DogePhotoManipulator;
 @ComponentScan
 @EnableAutoConfiguration
 public class Application {
+
+	@Bean
+	WebMvcConfigurerAdapter mvcViewConfigurer() {
+		return new WebMvcConfigurerAdapter() {
+			@Override
+			public void addViewControllers(ViewControllerRegistry registry) {
+				registry.addViewController("/").setViewName("client");
+				registry.addViewController("/monitor").setViewName("monitor");
+			}
+		};
+	}
 
 	@Bean
 	DogePhotoManipulator dogePhotoManipulator() {
