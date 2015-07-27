@@ -38,9 +38,7 @@ import doge.photo.PhotoManipulator;
 public class DogeService {
 
 	private final DogePhotoRepository dogePhotoRepository;
-
 	private final PhotoManipulator manipulator;
-
 	private final GridFsTemplate fs;
 
 	@Autowired

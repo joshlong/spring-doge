@@ -16,20 +16,19 @@
 
 package doge;
 
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.util.concurrent.TimeUnit;
-
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.graphite.Graphite;
+import com.codahale.metrics.graphite.GraphiteReporter;
+import doge.domain.User;
+import doge.domain.UserRepository;
+import doge.photo.DogePhotoManipulator;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -37,13 +36,7 @@ import org.springframework.web.socket.config.annotation.AbstractWebSocketMessage
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.graphite.Graphite;
-import com.codahale.metrics.graphite.GraphiteReporter;
-
-import doge.domain.User;
-import doge.domain.UserRepository;
-import doge.photo.DogePhotoManipulator;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Application configuration and main method.
@@ -56,87 +49,75 @@ import doge.photo.DogePhotoManipulator;
 @EnableAutoConfiguration
 public class Application {
 
-	@Bean
-	WebMvcConfigurerAdapter mvcViewConfigurer() {
-		return new WebMvcConfigurerAdapter() {
-			@Override
-			public void addViewControllers(ViewControllerRegistry registry) {
-				registry.addViewController("/").setViewName("client");
-				registry.addViewController("/monitor").setViewName("monitor");
-			}
-		};
-	}
+    @Bean
+    WebMvcConfigurerAdapter mvcViewConfigurer() {
+        return new WebMvcConfigurerAdapter() {
+            @Override
+            public void addViewControllers(ViewControllerRegistry registry) {
+                registry.addViewController("/").setViewName("client");
+                registry.addViewController("/monitor").setViewName("monitor");
+            }
+        };
+    }
 
-	@Bean
-	DogePhotoManipulator dogePhotoManipulator() {
-		DogePhotoManipulator dogePhotoManipulator = new DogePhotoManipulator();
-		dogePhotoManipulator.addTextOverlay("pivotal", "abstractfactorybean", "java");
-		dogePhotoManipulator.addTextOverlay("spring", "annotations", "boot");
-		dogePhotoManipulator.addTextOverlay("code", "semicolonfree", "groovy");
-		dogePhotoManipulator.addTextOverlay("clean", "juergenized", "spring");
-		dogePhotoManipulator.addTextOverlay("js", "nonblocking", "wat");
-		return dogePhotoManipulator;
-	}
+    @Bean
+    DogePhotoManipulator dogePhotoManipulator() {
+        DogePhotoManipulator dogePhotoManipulator = new DogePhotoManipulator();
+        dogePhotoManipulator.addTextOverlay("pivotal", "abstractfactorybean", "java");
+        dogePhotoManipulator.addTextOverlay("spring", "annotations", "boot");
+        dogePhotoManipulator.addTextOverlay("code", "semicolonfree", "groovy");
+        dogePhotoManipulator.addTextOverlay("clean", "juergenized", "spring");
+        dogePhotoManipulator.addTextOverlay("js", "nonblocking", "wat");
+        return dogePhotoManipulator;
+    }
 
-	@Bean
-	InitializingBean populateTestData(UserRepository repository) {
-		return () -> {
-			repository.save(new User("philwebb", "Phil Webb"));
-			repository.save(new User("joshlong", "Josh Long"));
-			repository.findAll().forEach(System.err::println);
-		};
-	}
+    @Bean
+    InitializingBean populateTestData(UserRepository repository) {
+        return () -> {
+            repository.save(new User("philwebb", "Phil Webb"));
+            repository.save(new User("joshlong", "Josh Long"));
+            repository.findAll().forEach(System.err::println);
+        };
+    }
 
-	@Configuration
-	@EnableWebSocketMessageBroker
-	static class WebSocketConfiguration extends AbstractWebSocketMessageBrokerConfigurer {
+    @Configuration
+    @EnableWebSocketMessageBroker
+    static class WebSocketConfiguration extends AbstractWebSocketMessageBrokerConfigurer {
 
-		@Override
-		public void registerStompEndpoints(StompEndpointRegistry registry) {
-			registry.addEndpoint("/doge").withSockJS();
-		}
+        @Override
+        public void registerStompEndpoints(StompEndpointRegistry registry) {
+            registry.addEndpoint("/doge").withSockJS();
+        }
 
-		@Override
-		public void configureMessageBroker(MessageBrokerRegistry registry) {
-			registry.enableSimpleBroker("/topic/");
-		}
+        @Override
+        public void configureMessageBroker(MessageBrokerRegistry registry) {
+            registry.enableSimpleBroker("/topic/");
+        }
 
-	}
+    }
 
-	@Configuration
-	static class MetricsConfiguration {
+    @Configuration
+    static class MetricsConfiguration {
 
-		private static final InetSocketAddress ADDRESS = new InetSocketAddress(
-				"localhost", 2003);
+        // see bit.ly/spring-boot-metrics for more on the
+        // DropWizard & Spring Boot integration
+        @Bean
+        public GraphiteReporter graphiteReporter(
+                MetricRegistry registry,
+                @Value("${graphite.host}") String host,
+                @Value("${graphite.port}") int port) {
 
-		@Bean
-		@Conditional(GraphiteCondition.class)
-		public GraphiteReporter graphiteReporter(MetricRegistry registry) {
-			GraphiteReporter reporter = GraphiteReporter.forRegistry(registry)
-					.prefixedWith("doge.spring.io").build(new Graphite(ADDRESS));
-			reporter.start(2, TimeUnit.SECONDS);
-			return reporter;
-		}
+            GraphiteReporter reporter =
+                GraphiteReporter.forRegistry(registry)
+                    .prefixedWith("doge.spring.io")
+                    .build(new Graphite(host, port));
+            reporter.start(2, TimeUnit.SECONDS);
+            return reporter;
+        }
+    }
 
-		public static class GraphiteCondition implements Condition {
-			@Override
-			public boolean matches(ConditionContext context,
-					AnnotatedTypeMetadata metadata) {
-				Socket socket = new Socket();
-				try {
-					socket.connect(ADDRESS);
-					socket.close();
-					return true;
-				}
-				catch (Exception ex) {
-					return false;
-				}
-			}
-		}
-	}
-
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 
 }
