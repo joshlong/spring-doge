@@ -16,13 +16,11 @@
 
 package doge;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.graphite.Graphite;
-import com.codahale.metrics.graphite.GraphiteReporter;
 import doge.domain.User;
 import doge.domain.UserRepository;
 import doge.photo.DogePhotoManipulator;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -36,8 +34,6 @@ import org.springframework.web.socket.config.annotation.AbstractWebSocketMessage
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * Application configuration and main method.
  *
@@ -48,6 +44,13 @@ import java.util.concurrent.TimeUnit;
 @ComponentScan
 @EnableAutoConfiguration
 public class Application {
+
+    @Autowired
+    void setMongoDbUri(
+            @Value("${MONGODB_URI}") String mongoDbUri) {
+        System.out.println("mongoDbUri: " + mongoDbUri);
+    }
+
 
     @Bean
     WebMvcConfigurerAdapter mvcViewConfigurer() {
@@ -96,26 +99,26 @@ public class Application {
 
     }
 
-    @Configuration
-    static class MetricsConfiguration {
+    /*  @Configuration
+      static class MetricsConfiguration {
 
-        // see bit.ly/spring-boot-metrics for more on the
-        // DropWizard & Spring Boot integration
-        @Bean
-        public GraphiteReporter graphiteReporter(
-                MetricRegistry registry,
-                @Value("${graphite.host}") String host,
-                @Value("${graphite.port}") int port) {
+          // see bit.ly/spring-boot-metrics for more on the
+          // DropWizard & Spring Boot integration
+          @Bean
+          public GraphiteReporter graphiteReporter(
+                  MetricRegistry registry,
+                  @Value("${graphite.host}") String host,
+                  @Value("${graphite.port}") int port) {
 
-            GraphiteReporter reporter =
-                GraphiteReporter.forRegistry(registry)
-                    .prefixedWith("doge.spring.io")
-                    .build(new Graphite(host, port));
-            reporter.start(2, TimeUnit.SECONDS);
-            return reporter;
-        }
-    }
-
+              GraphiteReporter reporter =
+                  GraphiteReporter.forRegistry(registry)
+                      .prefixedWith("doge.spring.io")
+                      .build(new Graphite(host, port));
+              reporter.start(2, TimeUnit.SECONDS);
+              return reporter;
+          }
+      }
+  */
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
