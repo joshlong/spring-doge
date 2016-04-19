@@ -1,4 +1,4 @@
-FROM maven:3-jdk-8
+FROM java:8
 
 MAINTAINER Patrick Chanezon <patrick@chanezon.com>
 
