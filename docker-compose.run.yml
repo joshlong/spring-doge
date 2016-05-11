@@ -1,13 +1,9 @@
 web:
-  image: chanezon/sts:3.7.5
-  volumes:
-    - ./..:/workspace
-    - maven:/root/.m2
+  image: chanezon/spring-doge
   ports:
    - "8080:8080"
   links: ["mongo"]
   environment:
-   - DISPLAY=$DISPLAY_MAC
    - MONGODB_URI=mongodb://mongo:27017/test
 mongo:
   image: mongo
